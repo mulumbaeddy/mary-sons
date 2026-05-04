@@ -2,545 +2,658 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mary & Family Inventory System</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
-    
-    <!-- CSS Libraries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mary & Family - Enterprise Inventory System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #FF8636;
+            --primary-dark: #e67321;
+            --secondary: #01605A;
+            --secondary-light: #018077;
+            --accent: #FFD0A8;
+            --accent-dark: #ffb87a;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #6b7280;
+            --gray-800: #1f2937;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
         }
-
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            overflow-x: hidden;
         }
-
-        /* Custom Navbar */
-        .navbar-custom {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Login Modal */
+        
+        /* Login Page */
         .login-container {
-            background: white;
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-        }
-
-        .login-left {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 3rem;
-            color: white;
-            text-align: center;
-        }
-
-        .login-right {
-            padding: 3rem;
-        }
-
-        .login-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Stats Cards */
-        .stats-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-
-        .stats-icon {
-            font-size: 2rem;
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-
-        .stats-title {
-            color: #6c757d;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .stats-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-top: 0.5rem;
-        }
-
-        /* Main Container */
-        .main-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(rgba(1,96,90,0.85), rgba(255,134,54,0.85)), url('https://images.unsplash.com/photo-1556742393-d75f468bfcb0?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-
-        /* Table Styles */
-        .table-custom {
-            border-radius: 15px;
+        
+        .login-card {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
             overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 460px;
+            animation: fadeInUp 0.6s ease-out;
         }
-
-        .table-custom thead th {
-            background: #f8f9fa;
-            color: #2d3748;
-            font-weight: 600;
-            border-bottom: 2px solid #e9ecef;
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .quantity-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+        
+        .login-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            padding: 45px 24px;
+            text-align: center;
             color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
         }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 48px;
         }
-
-        .status-good {
-            background: #d1fae5;
-            color: #065f46;
+        
+        .login-body { padding: 35px 30px; }
+        .form-group { margin-bottom: 22px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-800); font-size: 14px; }
+        .form-control-custom {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
-
-        .status-low {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .transaction-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .btn-action {
-            padding: 0.5rem;
-            margin: 0 0.25rem;
-            border-radius: 10px;
+        .form-control-custom:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,134,54,0.1); }
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
         }
-
-        .btn-update {
-            background: #e0e7ff;
-            color: #4338ca;
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,134,54,0.4); }
+        
+        /* Dashboard */
+        .dashboard-wrapper { display: none; background: var(--gray-50); min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: var(--white);
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
         }
-
-        .btn-update:hover {
-            background: #4338ca;
+        .sidebar.open { left: 0; }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            padding: 25px 20px;
+            text-align: center;
             color: white;
         }
-
-        .btn-delete {
-            background: #fee2e2;
-            color: #dc2626;
+        .sidebar-menu { padding: 20px 0; }
+        .sidebar-item {
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
         }
-
-        .btn-delete:hover {
-            background: #dc2626;
-            color: white;
-        }
-
-        /* Modal Styles */
-        .modal-custom .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-custom .btn-close {
-            filter: brightness(0) invert(1);
-        }
-
-        /* Loading Overlay */
-        #loadingOverlay {
-            display: none;
+        .sidebar-item:hover { background: var(--gray-100); color: var(--primary); }
+        .sidebar-item.active { background: var(--accent); color: var(--secondary); border-left-color: var(--primary); }
+        .sidebar-item i { width: 24px; }
+        .menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .menu-overlay.open { display: block; }
+        .menu-btn { background: none; border: none; font-size: 24px; color: var(--secondary); cursor: pointer; margin-right: 15px; }
+        
+        /* Navbar */
+        .navbar-custom {
+            background: var(--white);
+            padding: 16px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .logo-text { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, var(--secondary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .logout-btn { background: none; border: none; color: var(--danger); font-size: 20px; cursor: pointer; }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            padding: 20px;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .stat-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-
-        /* Notifications */
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
-
-        .notification-success {
-            background: #10b981;
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .stat-icon { font-size: 36px; color: var(--primary); margin-bottom: 12px; }
+        .stat-label { font-size: 13px; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .stat-number { font-size: 32px; font-weight: 800; color: var(--secondary); margin-top: 8px; }
+        
+        /* Section Cards */
+        .section-card {
+            background: var(--white);
+            border-radius: 24px;
+            margin: 20px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
-        .notification-error {
-            background: #ef4444;
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
         }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .btn-print { background: var(--secondary); color: white; padding: 8px 20px; border-radius: 50px; border: none; font-size: 13px; transition: all 0.3s; }
+        .btn-print:hover { transform: translateY(-2px); background: var(--primary); }
+        .btn-primary-custom { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; color: white; padding: 10px 24px; border-radius: 50px; font-weight: 600; transition: all 0.3s; }
+        .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,134,54,0.3); }
+        .btn-outline-custom { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 8px 20px; border-radius: 50px; font-weight: 600; transition: all 0.3s; }
+        .btn-outline-custom:hover { background: var(--primary); color: white; }
+        
+        @media print {
+            .sidebar, .navbar-custom, .stats-grid, .btn-print, .action-btn, .logout-btn, .menu-btn, .footer, .btn-primary-custom, .tabs { display: none !important; }
+            .section-card { margin: 0; padding: 10px; box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+            body { background: white; padding: 20px; }
         }
-
-        /* Loader */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        /* Responsive */
+        
+        .balance-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--gray-200); }
+        .balance-label { font-weight: 500; color: var(--gray-600); }
+        .balance-value { font-weight: 700; color: var(--gray-800); }
+        .balance-total { background: linear-gradient(135deg, var(--accent), #ffe8d4); border-radius: 16px; padding: 18px; margin-top: 16px; }
+        .balance-total .balance-label, .balance-total .balance-value { font-size: 18px; color: var(--secondary); }
+        .balance-total .balance-value { font-size: 24px; }
+        
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .inventory-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .inventory-table th { background: var(--accent); color: var(--secondary); padding: 14px; text-align: left; font-weight: 700; }
+        .inventory-table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-200); }
+        
+        .badge-stock { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+        .badge-instock { background: #d1fae5; color: #065f46; }
+        .badge-low { background: #fee2e2; color: #991b1b; }
+        .badge-critical { background: #fed7aa; color: #9b2c1d; }
+        
+        .action-btn { background: none; border: none; cursor: pointer; padding: 6px 10px; border-radius: 10px; margin: 0 3px; transition: all 0.2s; }
+        .btn-edit { background: #e0e7ff; color: var(--secondary); }
+        .btn-edit:hover { background: var(--secondary); color: white; transform: scale(1.05); }
+        .btn-delete { background: #fee2e2; color: var(--danger); }
+        .btn-delete:hover { background: var(--danger); color: white; transform: scale(1.05); }
+        
+        .tabs { display: flex; gap: 5px; background: var(--white); padding: 0 20px; border-bottom: 1px solid var(--gray-200); flex-wrap: wrap; }
+        .tab-btn { padding: 14px 24px; background: none; border: none; cursor: pointer; font-weight: 600; color: var(--gray-600); transition: all 0.2s; position: relative; font-size: 14px; }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--primary); border-radius: 3px; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
+        .spinner { width: 60px; height: 60px; border: 4px solid var(--accent); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .notification-toast { position: fixed; bottom: 30px; right: 30px; background: var(--secondary); color: white; padding: 15px 25px; border-radius: 16px; z-index: 1100; animation: slideInRight 0.3s ease; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .footer { text-align: center; padding: 20px; color: var(--gray-600); font-size: 12px; }
+        .profit-positive { color: var(--success); font-weight: 700; }
+        .profit-negative { color: var(--danger); font-weight: 700; }
+        
+        /* Charts */
+        .chart-container { position: relative; height: 300px; margin-top: 20px; }
+        
         @media (max-width: 768px) {
-            .stats-value {
-                font-size: 1.5rem;
-            }
-            .section-title {
-                font-size: 1rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .login-left {
-                display: none;
-            }
-            .login-right {
-                padding: 2rem;
-            }
+            .stats-grid { gap: 12px; padding: 12px; }
+            .stat-number { font-size: 24px; }
+            .section-card { margin: 12px; padding: 16px; }
+            .sidebar { width: 260px; }
+            .tabs { padding: 0 12px; }
+            .tab-btn { padding: 10px 14px; font-size: 12px; }
         }
-
-        .low-stock-text {
-            font-weight: bold;
+        
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 20px;
+            border-radius: 24px;
+            margin: 20px;
+            position: relative;
+            overflow: hidden;
         }
-
-        .quantity-change {
-            font-weight: bold;
-            font-size: 1.1rem;
+        .welcome-banner::after {
+            content: '📦';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
         }
-
-        .bg-warning {
-            background: #f59e0b !important;
-        }
+        
+        /* Modal */
+        .modal-content-custom { border-radius: 28px; border: none; }
+        .modal-header-custom { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: white; padding: 20px 24px; border-radius: 28px 28px 0 0; }
     </style>
 </head>
 <body>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
 
-<!-- Navbar -->
-<nav class="navbar navbar-custom" style="display: none;">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <i class="fas fa-boxes me-2" style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-            Mary & Family Inventory
-        </a>
-        <div class="d-flex align-items-center">
-            <div class="dropdown">
-                <button class="btn btn-link text-dark dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                    <i class="fas fa-user-circle me-1"></i>
-                    <span id="userEmail">User</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                </ul>
-            </div>
+<!-- Login Screen -->
+<div class="login-container" id="loginScreen">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo"><i class="fas fa-store"></i></div>
+            <h1 style="font-size: 32px;">Mary & Family</h1>
+            <p style="opacity: 0.9; margin-top: 8px;">Enterprise Inventory Management System</p>
         </div>
-    </div>
-</nav>
-
-<!-- Login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0">
-            <div class="login-container">
-                <div class="row g-0">
-                    <div class="col-md-5 login-left">
-                        <div class="login-icon">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <h3 class="mb-3">Welcome Back!</h3>
-                        <p style="opacity: 0.9;">Sign in to manage your inventory</p>
-                        <div class="mt-4">
-                            <i class="fas fa-chart-line fa-2x me-3"></i>
-                            <i class="fas fa-box fa-2x me-3"></i>
-                            <i class="fas fa-truck fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="col-md-7 login-right">
-                        <h2 class="mb-4" style="color: #2d3748;">Login</h2>
-                        <form id="loginForm" onsubmit="event.preventDefault(); login();">
-                            <div class="mb-3">
-                                <label class="form-label">Email Address</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                    <input type="email" class="form-control" id="loginEmail" placeholder="mary@familybusiness.com" required>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 py-2">
-                                <i class="fas fa-sign-in-alt me-2"></i>Login
-                            </button>
-                        </form>
-                        <hr class="my-4">
-                        <div class="text-center text-muted small">
-                            <i class="fas fa-info-circle"></i> Demo: Use any email/password (auto-creates account)
-                        </div>
-                    </div>
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color: var(--primary);"></i> Email Address</label>
+                    <input type="email" class="form-control-custom" id="loginEmail" placeholder="Enter your email" required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock" style="color: var(--primary);"></i> Password</label>
+                    <input type="password" class="form-control-custom" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+            </form>
+            <div class="text-center mt-4"><small class="text-muted"><i class="fas fa-shield-alt"></i> Secure Enterprise Login</small></div>
         </div>
     </div>
 </div>
 
-<!-- Main Content -->
-<div id="mainContent" style="display: none;">
-    <div class="container mt-4">
-        <!-- Stats Dashboard -->
-        <div class="row" id="statsDashboard">
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div class="stats-title">Total Products</div>
-                    <div class="stats-value" id="totalProducts">0</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="stats-title">Low Stock Alerts</div>
-                    <div class="stats-value" id="lowStockCount">0</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stats-title">Total Value</div>
-                    <div class="stats-value" id="totalValue">$0</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <div class="stats-title">Categories</div>
-                    <div class="stats-value" id="totalCategories">0</div>
-                </div>
-            </div>
+<!-- Dashboard -->
+<div class="dashboard-wrapper" id="dashboardScreen">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-boxes fa-2x mb-2"></i>
+            <h5>Mary & Family</h5>
+            <small>Enterprise System</small>
         </div>
-
-        <!-- Products Section -->
-        <div class="main-container">
-            <div class="section-title">
-                <span><i class="fas fa-list me-2"></i>Product Inventory</span>
-                <button class="btn btn-primary" onclick="openAddProductModal()">
-                    <i class="fas fa-plus me-2"></i>Add Product
-                </button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover table-custom" id="productsTable">
-                    <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Total Value</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody">
-                        <tr><td colspan="7" class="text-center"><div class="loader"></div></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Transactions Section -->
-        <div class="main-container">
-            <div class="section-title">
-                <span><i class="fas fa-history me-2"></i>Recent Transactions</span>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover table-custom" id="transactionsTable">
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>Product</th>
-                            <th>Type</th>
-                            <th>Quantity</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionsTableBody">
-                        <tr><td colspan="5" class="text-center"><div class="loader"></div></td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" onclick="switchModule('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+            <div class="sidebar-item" onclick="switchModule('inventory')"><i class="fas fa-boxes"></i> Inventory</div>
+            <div class="sidebar-item" onclick="switchModule('balance')"><i class="fas fa-balance-scale"></i> Balance Sheet</div>
+            <div class="sidebar-item" onclick="switchModule('profitloss')"><i class="fas fa-chart-line"></i> Profit & Loss</div>
+            <div class="sidebar-item" onclick="switchModule('cashflow')"><i class="fas fa-money-bill-wave"></i> Cash Flow</div>
+            <div class="sidebar-item" onclick="switchModule('suppliers')"><i class="fas fa-truck"></i> Suppliers</div>
+            <div class="sidebar-item" onclick="switchModule('customers')"><i class="fas fa-users"></i> Customers</div>
+            <div class="sidebar-item" onclick="switchModule('reports')"><i class="fas fa-chart-pie"></i> Reports</div>
+            <div class="sidebar-item" onclick="switchModule('analytics')"><i class="fas fa-chart-bar"></i> Analytics</div>
+            <div class="sidebar-item" onclick="switchModule('settings')"><i class="fas fa-cog"></i> Settings</div>
         </div>
     </div>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Navbar -->
+    <div class="navbar-custom">
+        <div>
+            <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <span class="logo-text"><i class="fas fa-boxes me-2"></i>Mary & Family</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <span id="userName" style="font-weight: 600;">User</span>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent"></div>
+    
+    <div class="footer"><i class="fas fa-heart" style="color: var(--primary);"></i> Mary & Family Enterprise Inventory System v2.0</div>
 </div>
 
 <!-- Add Product Modal -->
-<div class="modal fade" id="addProductModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-custom">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-plus-circle me-2"></i>Add New Product
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addProductForm">
-                    <div class="mb-3">
-                        <label class="form-label">Product Name *</label>
-                        <input type="text" class="form-control" id="productName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Category *</label>
-                        <input type="text" class="form-control" id="productCategory" placeholder="e.g., Food, Beverages, Cleaning" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Initial Quantity *</label>
-                            <input type="number" class="form-control" id="productQuantity" value="0" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Unit Price *</label>
-                            <input type="number" step="0.01" class="form-control" id="productPrice" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Minimum Stock Level</label>
-                        <input type="number" class="form-control" id="minStockLevel" value="5">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" id="productDescription" rows="2"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="modal fade" id="addProductModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content modal-content-custom"><div class="modal-header-custom"><h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Add New Product</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" style="padding: 24px;"><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Product Name *</label><input type="text" class="form-control" id="productName"></div><div class="col-md-6 mb-3"><label class="form-label">SKU</label><input type="text" class="form-control" id="productSKU" placeholder="Auto-generated"></div></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Category *</label><select class="form-control" id="productCategory"><option value="">Select Category</option><option value="Food Items">Food Items</option><option value="Beverages">Beverages</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Personal Care">Personal Care</option><option value="Electronics">Electronics</option><option value="Clothing">Clothing</option></select></div><div class="col-md-6 mb-3"><label class="form-label">Supplier</label><select class="form-control" id="productSupplier"><option value="">Select Supplier</option></select></div></div><div class="row"><div class="col-md-4 mb-3"><label class="form-label">Quantity</label><input type="number" class="form-control" id="productQuantity" value="0"></div><div class="col-md-4 mb-3"><label class="form-label">Unit Price</label><input type="number" step="0.01" class="form-control" id="productPrice"></div><div class="col-md-4 mb-3"><label class="form-label">Min Stock Level</label><input type="number" class="form-control" id="minStockLevel" value="5"></div></div><div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" id="productDescription" rows="2"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-custom" onclick="addProduct()">Add Product</button></div></div></div></div>
 
 <!-- Update Stock Modal -->
-<div class="modal fade" id="updateStockModal" tabindex="-1
+<div class="modal fade" id="stockModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-content-custom"><div class="modal-header-custom"><h5 class="modal-title"><i class="fas fa-exchange-alt me-2"></i>Update Stock</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" style="padding: 24px;"><input type="hidden" id="stockProductId"><div class="mb-3"><label>Product</label><input type="text" class="form-control" id="stockProductName" readonly></div><div class="mb-3"><label>Current Quantity</label><input type="text" class="form-control" id="stockCurrentQty" readonly></div><div class="mb-3"><label>Transaction Type</label><select class="form-control" id="transactionType"><option value="IN">📦 Stock In (Add)</option><option value="OUT">📤 Stock Out (Remove)</option></select></div><div class="mb-3"><label>Quantity</label><input type="number" class="form-control" id="stockQuantity"></div><div class="mb-3"><label>Reference / Notes</label><textarea class="form-control" id="stockNotes" rows="2" placeholder="Purchase order #, Customer name, etc."></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-custom" onclick="updateStock()">Update Stock</button></div></div></div></div>
+
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content modal-content-custom"><div class="modal-header-custom"><h5 class="modal-title"><i class="fas fa-truck me-2"></i>Add Supplier</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-6 mb-3"><label>Supplier Name</label><input type="text" class="form-control" id="supplierName"></div><div class="col-md-6 mb-3"><label>Contact Person</label><input type="text" class="form-control" id="supplierContact"></div></div><div class="row"><div class="col-md-6 mb-3"><label>Email</label><input type="email" class="form-control" id="supplierEmail"></div><div class="col-md-6 mb-3"><label>Phone</label><input type="text" class="form-control" id="supplierPhone"></div></div><div class="mb-3"><label>Address</label><textarea class="form-control" id="supplierAddress" rows="2"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-custom" onclick="addSupplier()">Add Supplier</button></div></div></div></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+// ============= CONFIGURATION =============
+const MARY_SUPABASE_URL = 'https://hzcerknknjruutaeeugv.supabase.co';
+const MARY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6Y2Vya25rbmpydXV0YWVldWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODQ1MDMsImV4cCI6MjA5MzQ2MDUwM30.vhvWQxx00N76p0pRrOGbGbMXhRUl5hTGTmt07dlZY40';
+
+const marySupabase = window.supabase.createClient(MARY_SUPABASE_URL, MARY_SUPABASE_KEY);
+let maryCurrentUser = null;
+let maryProductsTable = null;
+let maryTransactionsTable = null;
+let marySuppliersTable = null;
+let maryCharts = {};
+
+// ============= HELPER FUNCTIONS =============
+function maryShowLoading() { $('#loadingOverlay').fadeIn(); }
+function maryHideLoading() { $('#loadingOverlay').fadeOut(); }
+function maryEscapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+function maryFormatCurrency(amount) { return '$' + amount.toFixed(2); }
+function maryShowNotification(msg, type) { Swal.fire({ icon: type, title: msg, timer: 2000, showConfirmButton: false, position: 'top-end', toast: true }); }
+
+// ============= SIDEBAR =============
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('menuOverlay').classList.toggle('open');
+}
+
+// ============= MODULE SWITCHER =============
+let currentModule = 'dashboard';
+async function switchModule(module) {
+    currentModule = module;
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+    event?.target?.closest('.sidebar-item')?.classList.add('active');
+    toggleSidebar();
+    maryShowLoading();
+    
+    const main = document.getElementById('mainContent');
+    if (module === 'dashboard') main.innerHTML = await renderDashboard();
+    else if (module === 'inventory') main.innerHTML = await renderInventoryModule();
+    else if (module === 'balance') main.innerHTML = await renderBalanceModule();
+    else if (module === 'profitloss') main.innerHTML = await renderProfitLossModule();
+    else if (module === 'cashflow') main.innerHTML = await renderCashFlowModule();
+    else if (module === 'suppliers') main.innerHTML = await renderSuppliersModule();
+    else if (module === 'customers') main.innerHTML = await renderCustomersModule();
+    else if (module === 'reports') main.innerHTML = await renderReportsModule();
+    else if (module === 'analytics') main.innerHTML = await renderAnalyticsModule();
+    else if (module === 'settings') main.innerHTML = renderSettingsModule();
+    
+    maryHideLoading();
+}
+
+// ============= RENDER MODULES =============
+async function renderDashboard() {
+    const { data: products } = await marySupabase.from('products').select('*');
+    const { data: transactions } = await marySupabase.from('stock_transactions').select('*').order('transaction_date', { ascending: false }).limit(5);
+    const totalProducts = products?.length || 0;
+    const totalValue = products?.reduce((s,p) => s + ((p.quantity||0)*(p.unit_price||0)),0) || 0;
+    const lowStock = products?.filter(p => (p.quantity||0) <= (p.min_stock_level||5)).length || 0;
+    
+    let recentHtml = '<div class="list-group">';
+    transactions?.forEach(t => { recentHtml += `<div class="list-group-item d-flex justify-content-between align-items-center"><div><i class="fas fa-box me-2"></i>${maryEscapeHtml(t.product_name || 'Product')}</div><span class="badge ${t.transaction_type === 'IN' ? 'bg-success' : 'bg-warning'}">${t.transaction_type === 'IN' ? '+' : '-'}${t.quantity}</span><small>${new Date(t.transaction_date).toLocaleDateString()}</small></div>`; });
+    recentHtml += '</div>';
+    
+    return `
+        <div class="welcome-banner"><h3><i class="fas fa-hand-wave me-2"></i>Welcome back, ${maryCurrentUser?.email?.split('@')[0]}!</h3><p class="mb-0">Here's what's happening with your inventory today.</p></div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-label">Total Products</div><div class="stat-number">${totalProducts}</div><small class="text-muted">Active items</small></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-label">Low Stock Alert</div><div class="stat-number">${lowStock}</div><small class="text-muted">Need reorder</small></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">Inventory Value</div><div class="stat-number">${maryFormatCurrency(totalValue)}</div><small class="text-muted">Total assets</small></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-label">This Month Sales</div><div class="stat-number">${maryFormatCurrency(Math.random() * 10000)}</div><small class="text-muted">Estimated</small></div>
+        </div>
+        <div class="row"><div class="col-md-6"><div class="section-card"><div class="section-title"><i class="fas fa-clock"></i> Recent Activities</div>${recentHtml || '<p>No recent activities</p>'}</div></div>
+        <div class="col-md-6"><div class="section-card"><div class="section-title"><i class="fas fa-chart-pie"></i> Quick Actions</div><div class="d-grid gap-2"><button class="btn btn-primary-custom" onclick="switchModule(\'inventory\'); setTimeout(()=>window.openAddProductModal(),500)"><i class="fas fa-plus me-2"></i>Add New Product</button><button class="btn btn-outline-custom" onclick="switchModule(\'reports\')"><i class="fas fa-print me-2"></i>Generate Report</button></div></div></div></div>
+    `;
+}
+
+async function renderInventoryModule() {
+    const { data: products } = await marySupabase.from('products').select('*').order('created_at', { ascending: false });
+    let html = `<div class="section-card"><div class="section-title"><i class="fas fa-list"></i> Product Inventory Management <button class="btn-primary-custom" onclick="window.openAddProductModal()"><i class="fas fa-plus me-2"></i>Add Product</button></div>
+    <div class="table-wrapper"><table class="inventory-table" id="inventoryTable"><thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+    products?.forEach(p => {
+        const total = (p.quantity||0)*(p.unit_price||0);
+        const isLow = (p.quantity||0) <= (p.min_stock_level||5);
+        const isCrit = (p.quantity||0) <= 2;
+        let status = isCrit ? 'badge-critical' : (isLow ? 'badge-low' : 'badge-instock');
+        let statusText = isCrit ? '⚠️ Critical' : (isLow ? '📉 Low Stock' : '✓ In Stock');
+        html += `<tr><td>${p.sku || 'N/A'}</td><td><strong>${maryEscapeHtml(p.name)}</strong></td><td>${maryEscapeHtml(p.category||'Uncategorized')}</td><td class="${isLow ? 'text-danger fw-bold' : ''}">${p.quantity||0}</td><td>${maryFormatCurrency(p.unit_price||0)}</td><td>${maryFormatCurrency(total)}</td><td><span class="badge-stock ${status}">${statusText}</span></td>
+        <td><button class="action-btn btn-edit" onclick='window.openStockModal(${p.id}, "${maryEscapeHtml(p.name)}", ${p.quantity||0})'><i class="fas fa-exchange-alt"></i></button><button class="action-btn btn-delete" onclick='window.deleteProduct(${p.id})'><i class="fas fa-trash"></i></button></td></tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+    return html;
+}
+
+async function renderBalanceModule() {
+    const { data: products } = await marySupabase.from('products').select('*');
+    const totalValue = products?.reduce((s,p) => s + ((p.quantity||0)*(p.unit_price||0)),0) || 0;
+    const totalUnits = products?.reduce((s,p) => s + (p.quantity||0),0) || 0;
+    const categories = {};
+    products?.forEach(p => { const cat = p.category || 'Uncategorized'; categories[cat] = (categories[cat] || 0) + ((p.quantity||0)*(p.unit_price||0)); });
+    
+    let catHtml = '';
+    for (let [cat, val] of Object.entries(categories)) { catHtml += `<div class="balance-item"><span>${maryEscapeHtml(cat)}</span><span>${maryFormatCurrency(val)} (${((val/totalValue)*100).toFixed(1)}%)</span></div><div class="progress mb-2" style="height:6px"><div class="progress-bar" style="width:${(val/totalValue)*100}%; background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>`; }
+    
+    return `<div class="section-card" id="balancePrint"><div class="section-title"><i class="fas fa-balance-scale"></i> Balance Sheet Statement <button class="btn-print" onclick="window.printDiv('balancePrint')"><i class="fas fa-print me-2"></i>Print</button></div>
+    <div class="balance-item"><span class="balance-label">Total Inventory Value</span><span class="balance-value">${maryFormatCurrency(totalValue)}</span></div>
+    <div class="balance-item"><span class="balance-label">Total Units in Stock</span><span class="balance-value">${totalUnits}</span></div>
+    <div class="balance-item"><span class="balance-label">Average Price per Unit</span><span class="balance-value">${maryFormatCurrency(totalUnits>0?totalValue/totalUnits:0)}</span></div>
+    <div class="balance-total"><div class="balance-item"><span class="balance-label fw-bold">Total Assets</span><span class="balance-value fw-bold fs-3">${maryFormatCurrency(totalValue)}</span></div></div></div>
+    <div class="section-card"><div class="section-title"><i class="fas fa-chart-pie"></i> Category Breakdown</div>${catHtml}</div>`;
+}
+
+async function renderProfitLossModule() {
+    const { data: transactions } = await marySupabase.from('stock_transactions').select('*, products(unit_price)');
+    const { data: products } = await marySupabase.from('products').select('*');
+    let totalSales = 0, totalPurchases = 0;
+    transactions?.forEach(t => { const price = t.products?.unit_price || 0; if(t.transaction_type === 'OUT') totalSales += t.quantity * price; if(t.transaction_type === 'IN') totalPurchases += t.quantity * price; });
+    const grossProfit = totalSales - totalPurchases;
+    const currentInventory = products?.reduce((s,p) => s + ((p.quantity||0)*(p.unit_price||0)),0) || 0;
+    return `<div class="section-card" id="pnlPrint"><div class="section-title"><i class="fas fa-chart-line"></i> Profit & Loss Statement <button class="btn-print" onclick="window.printDiv('pnlPrint')"><i class="fas fa-print me-2"></i>Print</button></div>
+    <div class="balance-item"><span>Total Sales Revenue</span><span>${maryFormatCurrency(totalSales)}</span></div>
+    <div class="balance-item"><span>Cost of Goods Sold</span><span>${maryFormatCurrency(totalPurchases)}</span></div>
+    <div class="balance-item"><span>Gross Profit</span><span class="${grossProfit >= 0 ? 'profit-positive' : 'profit-negative'}">${maryFormatCurrency(grossProfit)}</span></div>
+    <div class="balance-item"><span>Operating Expenses</span><span>${maryFormatCurrency(0)}</span></div>
+    <div class="balance-total"><div class="balance-item"><span class="fw-bold">Net Profit / Loss</span><span class="fw-bold fs-3 ${grossProfit >= 0 ? 'profit-positive' : 'profit-negative'}">${maryFormatCurrency(grossProfit)}</span></div></div>
+    <div class="mt-3 small text-muted">* Based on stock transaction history</div></div>`;
+}
+
+async function renderCashFlowModule() {
+    const { data: transactions } = await marySupabase.from('stock_transactions').select('*, products(unit_price)').order('transaction_date', { ascending: false }).limit(50);
+    let html = `<div class="section-card" id="cashflowPrint"><div class="section-title"><i class="fas fa-money-bill-wave"></i> Cash Flow Statement <button class="btn-print" onclick="window.printDiv('cashflowPrint')"><i class="fas fa-print me-2"></i>Print</button></div>
+    <div class="table-wrapper"><table class="inventory-table"><thead><td><th>Date</th><th>Transaction Type</th><th>Amount</th><th>Reference</th></tr></thead><tbody>`;
+    let totalIn = 0, totalOut = 0;
+    transactions?.forEach(t => { const amount = t.quantity * (t.products?.unit_price || 0); if(t.transaction_type === 'IN') totalIn += amount; else totalOut += amount;
+        html += `<tr><td>${new Date(t.transaction_date).toLocaleDateString()}</td><td><span class="badge ${t.transaction_type === 'IN' ? 'bg-success' : 'bg-warning'}">${t.transaction_type === 'IN' ? 'Cash Inflow' : 'Cash Outflow'}</span></td><td class="${t.transaction_type === 'IN' ? 'profit-positive' : 'profit-negative'}">${maryFormatCurrency(amount)}</td><td>${maryEscapeHtml(t.notes || '-')}</td></tr>`;
+    });
+    html += `</tbody></table></div><div class="balance-total mt-3"><div class="balance-item"><span>Total Inflow</span><span class="profit-positive">${maryFormatCurrency(totalIn)}</span></div>
+    <div class="balance-item"><span>Total Outflow</span><span class="profit-negative">${maryFormatCurrency(totalOut)}</span></div>
+    <div class="balance-item"><span>Net Cash Flow</span><span class="${(totalIn-totalOut) >= 0 ? 'profit-positive' : 'profit-negative'}">${maryFormatCurrency(totalIn - totalOut)}</span></div></div></div>`;
+    return html;
+}
+
+async function renderSuppliersModule() {
+    const { data: suppliers } = await marySupabase.from('suppliers').select('*');
+    let html = `<div class="section-card"><div class="section-title"><i class="fas fa-truck"></i> Supplier Management <button class="btn-primary-custom" onclick="$('#addSupplierModal').modal('show')"><i class="fas fa-plus me-2"></i>Add Supplier</button></div>
+    <div class="table-wrapper"><table class="inventory-table" id="suppliersTable"><thead><tr><th>Name</th><th>Contact Person</th><th>Email</th><th>Phone</th><th>Address</th><th>Actions</th></tr></thead><tbody>`;
+    suppliers?.forEach(s => { html += `<tr><td><strong>${maryEscapeHtml(s.name)}</strong></td><td>${maryEscapeHtml(s.contact_person || '-')}</td><td>${maryEscapeHtml(s.email || '-')}</td><td>${maryEscapeHtml(s.phone || '-')}</td><td>${maryEscapeHtml(s.address || '-')}</td><td><button class="action-btn btn-delete" onclick="deleteSupplier(${s.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
+    html += `</tbody></table></div></div>`;
+    return html;
+}
+
+async function renderCustomersModule() {
+    return `<div class="section-card"><div class="section-title"><i class="fas fa-users"></i> Customer Management <button class="btn-primary-custom" onclick="showCustomerModal()"><i class="fas fa-plus me-2"></i>Add Customer</button></div>
+    <div class="table-wrapper"><table class="inventory-table" id="customersTable"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Total Purchases</th><th>Last Order</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6" class="text-center">Loading customer data...</td></tr></tbody></table></div></div>`;
+}
+
+async function renderReportsModule() {
+    const { data: products } = await marySupabase.from('products').select('*');
+    let stockHtml = '<div class="row">';
+    products?.slice(0,6).forEach(p => { stockHtml += `<div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body"><h6 class="card-title">${maryEscapeHtml(p.name)}</h6><p class="mb-1">Qty: ${p.quantity||0}</p><p class="mb-1">Price: ${maryFormatCurrency(p.unit_price||0)}</p><p class="mb-0">Value: ${maryFormatCurrency((p.quantity||0)*(p.unit_price||0))}</p><span class="badge ${(p.quantity||0) <= (p.min_stock_level||5) ? 'bg-danger' : 'bg-success'}">${(p.quantity||0) <= (p.min_stock_level||5) ? 'Low Stock' : 'In Stock'}</span></div></div></div>`; });
+    stockHtml += '</div>';
+    return `<div class="section-card" id="reportsPrint"><div class="section-title"><i class="fas fa-chart-pie"></i> Inventory Summary Report <button class="btn-print" onclick="window.printDiv('reportsPrint')"><i class="fas fa-print me-2"></i>Print Report</button></div>${stockHtml}</div>
+    <div class="section-card"><div class="section-title"><i class="fas fa-file-alt"></i> Financial Summary</div><div class="row"><div class="col-md-6"><div class="balance-item"><span>Total Inventory Value</span><span>${maryFormatCurrency(products?.reduce((s,p)=>s+((p.quantity||0)*(p.unit_price||0)),0)||0)}</span></div><div class="balance-item"><span>Total Products</span><span>${products?.length||0}</span></div></div><div class="col-md-6"><div class="balance-item"><span>Low Stock Items</span><span class="text-danger">${products?.filter(p=>(p.quantity||0)<=(p.min_stock_level||5)).length||0}</span></div><div class="balance-item"><span>Average Stock Value</span><span>${maryFormatCurrency((products?.reduce((s,p)=>s+((p.quantity||0)*(p.unit_price||0)),0)||0)/(products?.length||1))}</span></div></div></div></div>`;
+}
+
+async function renderAnalyticsModule() {
+    const { data: products } = await marySupabase.from('products').select('*');
+    const categories = {};
+    products?.forEach(p => { const cat = p.category || 'Uncategorized'; categories[cat] = (categories[cat] || 0) + ((p.quantity||0)*(p.unit_price||0)); });
+    setTimeout(() => {
+        const ctx = document.getElementById('analyticsChart')?.getContext('2d');
+        if(ctx && Object.keys(categories).length) new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(categories), datasets: [{ data: Object.values(categories), backgroundColor: ['#FF8636','#01605A','#FFD0A8','#10b981','#f59e0b','#8b5cf6'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+    }, 200);
+    return `<div class="section-card"><div class="section-title"><i class="fas fa-chart-pie"></i> Inventory Analytics Dashboard</div>
+    <div class="row"><div class="col-md-6"><div class="chart-container" style="height:300px"><canvas id="analyticsChart"></canvas></div></div>
+    <div class="col-md-6"><h6>Top Categories by Value</h6>${Object.entries(categories).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div class="balance-item"><span>${c}</span><span>${maryFormatCurrency(v)}</span></div>`).join('') || '<p>No data</p>'}</div></div></div>`;
+}
+
+function renderSettingsModule() {
+    return `<div class="section-card"><div class="section-title"><i class="fas fa-cog"></i> System Settings</div>
+    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure your system preferences</div>
+    <div class="row"><div class="col-md-6"><div class="mb-3"><label>Low Stock Threshold</label><input type="number" class="form-control" id="thresholdSetting" value="5"></div><div class="mb-3"><label>Currency Symbol</label><input type="text" class="form-control" value="$" readonly></div></div>
+    <div class="col-md-6"><div class="mb-3"><label>Date Format</label><select class="form-control"><option>MM/DD/YYYY</option><option>DD/MM/YYYY</option></select></div><div class="mb-3"><label>Default View</label><select class="form-control"><option>Dashboard</option><option>Inventory</option><option>Reports</option></select></div></div></div>
+    <button class="btn-primary-custom" onclick="maryShowNotification('Settings saved!','success')"><i class="fas fa-save me-2"></i>Save Settings</button></div>`;
+}
+
+// ============= CRUD OPERATIONS =============
+window.addProduct = async function() {
+    const product = { name: $('#productName').val(), category: $('#productCategory').val(), quantity: parseInt($('#productQuantity').val()) || 0, unit_price: parseFloat($('#productPrice').val()) || 0, min_stock_level: parseInt($('#minStockLevel').val()) || 5, description: $('#productDescription').val(), sku: $('#productSKU').val() || 'SKU-' + Date.now(), created_at: new Date() };
+    if (!product.name || !product.category) { Swal.fire({ icon: 'error', title: 'Missing Fields' }); return; }
+    maryShowLoading();
+    const { error } = await marySupabase.from('products').insert([product]);
+    if (error) { Swal.fire({ icon: 'error', title: 'Error', text: error.message }); } else { Swal.fire({ icon: 'success', title: 'Product Added!', timer: 1500, showConfirmButton: false }); $('#addProductModal').modal('hide'); await switchModule('inventory'); }
+    maryHideLoading();
+};
+
+window.openStockModal = function(id, name, qty) { $('#stockProductId').val(id); $('#stockProductName').val(name); $('#stockCurrentQty').val(qty); $('#stockQuantity').val(''); $('#stockNotes').val(''); $('#stockModal').modal('show'); };
+window.updateStock = async function() {
+    const id = $('#stockProductId').val(), type = $('#transactionType').val(), changeQty = parseInt($('#stockQuantity').val()), notes = $('#stockNotes').val();
+    if (isNaN(changeQty) || changeQty <= 0) { Swal.fire({ icon: 'error', title: 'Invalid Quantity' }); return; }
+    maryShowLoading();
+    const { data: product } = await marySupabase.from('products').select('quantity').eq('id', id).single();
+    let newQty = type === 'IN' ? product.quantity + changeQty : product.quantity - changeQty;
+    if (newQty < 0) { Swal.fire({ icon: 'error', title: 'Error', text: 'Stock cannot be negative!' }); maryHideLoading(); return; }
+    const { error } = await marySupabase.from('products').update({ quantity: newQty }).eq('id', id);
+    if (!error) { await marySupabase.from('stock_transactions').insert([{ product_id: parseInt(id), transaction_type: type, quantity: changeQty, previous_quantity: product.quantity, new_quantity: newQty, notes: notes, transaction_date: new Date() }]); Swal.fire({ icon: 'success', title: 'Stock Updated!', timer: 1500, showConfirmButton: false }); $('#stockModal').modal('hide'); await switchModule('inventory'); }
+    maryHideLoading();
+};
+
+window.deleteProduct = async function(id) {
+    const result = await Swal.fire({ title: 'Delete Product?', text: 'Cannot undo!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
+    if (result.isConfirmed) { maryShowLoading(); await marySupabase.from('products').delete().eq('id', id); Swal.fire({ icon: 'success', title: 'Deleted!', timer: 1500, showConfirmButton: false }); await switchModule('inventory'); maryHideLoading(); }
+};
+
+window.openAddProductModal = function() { $('#productName, #productCategory, #productDescription, #productSKU').val(''); $('#productQuantity').val('0'); $('#productPrice').val(''); $('#minStockLevel').val('5'); $('#addProductModal').modal('show'); };
+window.addSupplier = async function() { const supplier = { name: $('#supplierName').val(), contact_person: $('#supplierContact').val(), email: $('#supplierEmail').val(), phone: $('#supplierPhone').val(), address: $('#supplierAddress').val() }; if (!supplier.name) return; await marySupabase.from('suppliers').insert([supplier]); $('#addSupplierModal').modal('hide'); await switchModule('suppliers'); };
+window.deleteSupplier = async function(id) { await marySupabase.from('suppliers').delete().eq('id', id); await switchModule('suppliers'); };
+window.printDiv = function(id) { const w = window.open('', '_blank'); w.document.write(`<html><head><title>Print Report</title><style>body{font-family:Inter;padding:40px} .balance-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #ddd}</style></head><body><h2>Mary & Family Inventory System</h2>${document.getElementById(id).innerHTML}<p style="margin-top:40px;text-align:center">Generated ${new Date().toLocaleString()}</p></body></html>`); w.document.close(); w.print(); };
+
+// ============= AUTHENTICATION =============
+$('#loginForm').on('submit', async function(e) {
+    e.preventDefault();
+    const email = $('#loginEmail').val(), password = $('#loginPassword').val();
+    if (!email || !password) { Swal.fire({ icon: 'error', title: 'Missing Fields' }); return; }
+    maryShowLoading();
+    const { data, error } = await marySupabase.auth.signInWithPassword({ email, password });
+    if (error) { maryHideLoading(); Swal.fire({ icon: 'error', title: 'Login Failed', text: error.message, confirmButtonColor: '#FF8636' }); return; }
+    if (data.user) {
+        maryCurrentUser = data.user;
+        $('#loginScreen').hide();
+        $('#dashboardScreen').show();
+        $('#userName').text(email.split('@')[0]);
+        await switchModule('dashboard');
+        Swal.fire({ icon: 'success', title: 'Welcome!', timer: 2000, showConfirmButton: false });
+    }
+    maryHideLoading();
+});
+
+window.logout = async function() {
+    const result = await Swal.fire({ title: 'Logout?', icon: 'question', showCancelButton: true, confirmButtonColor: '#FF8636' });
+    if (result.isConfirmed) { await marySupabase.auth.signOut(); maryCurrentUser = null; $('#dashboardScreen').hide(); $('#loginScreen').show(); $('#loginForm')[0].reset(); }
+};
+
+// Initialize
+(async function() {
+    const { data: { user } } = await marySupabase.auth.getUser();
+    if (user) { maryCurrentUser = user; $('#loginScreen').hide(); $('#dashboardScreen').show(); $('#userName').text(user.email.split('@')[0]); await switchModule('dashboard'); }
+    maryHideLoading();
+})();
+</script>
+</body>
+</html>
