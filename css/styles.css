@@ -178,7 +178,7 @@ dialog::backdrop { background: rgba(8, 36, 33, .5); backdrop-filter: blur(2px); 
   .menu-open .sidebar { transform: none; box-shadow: 8px 0 40px #0006; }
   .scrim { display: block; position: fixed; inset: 0; background: #0007; z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .menu-open .scrim { opacity: 1; pointer-events: auto; }
-  .menu-btn { display: block; } .back-btn:not([hidden]) { display: grid; } .date-pill { display: none; }
+  .menu-btn { display: block; } .date-pill { display: none; }
   .main { padding: 16px 14px; }
 }
 @media (max-width: 640px) {
@@ -216,8 +216,15 @@ dialog::backdrop { background: rgba(8, 36, 33, .5); backdrop-filter: blur(2px); 
 .install-btn { margin-bottom: 8px; width: 100%; }
 td, th, .nav-item, .badge, .date-pill { font-weight: 800; }
 
-.back-btn { display: none; width: 42px; height: 42px; flex: none; place-items: center; border: 1px solid var(--line); background: #fff; border-radius: 10px; color: var(--teal); padding: 0; font-size: 1.4rem; font-weight: 800; }
 .login-card { text-align: center; }
 .login-card .brand-mark { margin-left: auto; margin-right: auto; }
 .login-card .wordmark { text-align: center; }
 .login-card form { text-align: left; }
+
+/* ---------- offline status ---------- */
+.net-bar { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px);
+  background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 999px; box-shadow: var(--shadow); font-weight: 800; font-size: .85rem; }
+.net-bar.offline { background: var(--amber); }
+.net-bar.problem { background: var(--red); }
+.net-bar button { background: #ffffff26; border: 0; color: #fff; border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: .8rem; }
+.pending-tag { color: var(--amber); font-size: .75rem; font-weight: 800; }
