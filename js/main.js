@@ -140,9 +140,6 @@ function drawBar(st = status()) {
   const n = st.pending, plural = `${n} change${n === 1 ? '' : 's'}`;
   let html = '', cls = 'net-bar';
   if (st.failed) { cls += ' problem'; html = `${st.failed} saved entr${st.failed === 1 ? 'y' : 'ies'} could not be sent <button id="reviewBtn">Review</button>`; }
-  else if (!st.online) { cls += ' offline'; html = `Offline — working from saved data${n ? ` · ${plural} waiting` : ''}`; }
-  else if (st.syncing) html = `Sending ${plural}…`;
-  else if (n) html = `${plural} waiting to send <button id="syncBtn">Send now</button>`;
   bar.className = html ? cls : 'net-bar hidden'; bar.innerHTML = html;
   const rb = $('#reviewBtn'), sb = $('#syncBtn');
   if (rb) rb.onclick = () => openModal({ eyebrow: 'OFFLINE ENTRIES', title: 'Not saved to the system', submitLabel: 'OK, clear this list',

@@ -178,7 +178,8 @@ dialog::backdrop { background: rgba(8, 36, 33, .5); backdrop-filter: blur(2px); 
   .menu-open .sidebar { transform: none; box-shadow: 8px 0 40px #0006; }
   .scrim { display: block; position: fixed; inset: 0; background: #0007; z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .menu-open .scrim { opacity: 1; pointer-events: auto; }
-  .menu-btn { display: block; } .date-pill { display: none; }
+  .menu-btn { display: block; position: fixed; top: 14px; left: 14px; z-index: 45; box-shadow: 0 2px 10px #0002; }
+  .topbar { padding-left: 54px; min-height: 42px; } .date-pill { display: none; }
   .main { padding: 16px 14px; }
 }
 @media (max-width: 640px) {
