@@ -34,6 +34,7 @@ async function route() {
   const token = ++navToken;
   $$('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.page === key));
   closeMenu();
+  $('#backBtn').hidden = key === 'dashboard';
   content.innerHTML = skeleton();
   try {
     const page = await ROUTES[key].load();
@@ -63,6 +64,7 @@ function buildNav() {
 const closeMenu = () => document.body.classList.remove('menu-open');
 $('#menuBtn').onclick = () => document.body.classList.toggle('menu-open');
 $('#scrim').onclick = closeMenu;
+$('#backBtn').onclick = () => { history.length > 1 ? history.back() : (location.hash = '#/dashboard'); };
 $('#logoutBtn').onclick = () => supabase.auth.signOut();
 $('#todayLabel').textContent = new Date().toLocaleDateString('en-UG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 

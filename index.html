@@ -24,13 +24,14 @@
       <h1 class="wordmark"><span class="inv">INV</span> SYSTEM</h1>
       <form id="loginForm">
         <label for="email">Email address</label>
-        <input id="email" type="email" autocomplete="username" required placeholder="you@example.com">
+        <input id="email" type="email" autocomplete="username" required>
         <label for="password">Password</label>
         <input id="password" type="password" autocomplete="current-password" required placeholder="Your password">
         <button class="primary full" type="submit">Sign in</button>
         <p id="loginMessage" class="message" role="status"></p>
         <button type="button" id="forgotBtn" class="link">Forgot password?</button>
       </form>
+      <p class="tiny muted">Only approved business users have accounts. Ask the owner to create yours.</p>
     </section>
   </div>
 
@@ -50,6 +51,7 @@
     <main class="main">
       <header class="topbar">
         <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+        <button class="back-btn" id="backBtn" aria-label="Go back" hidden>←</button>
         <div class="title"><p class="eyebrow" id="pageEyebrow"></p><h1 id="pageTitle"></h1></div>
         <div class="top-actions"><span class="date-pill" id="todayLabel"></span><button class="primary" id="quickSaleBtn" hidden>+ New sale</button></div>
       </header>
