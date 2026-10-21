@@ -1,8 +1,7 @@
 // App shell: authentication, navigation, routing.
 import { supabase, isConfigured } from './supabase.js';
-import { session, role, roleLabel, isPartner } from './store.js';
+import { session, role, roleLabel, isOwner, isPartner } from './store.js';
 import { loadProfile } from './api.js';
-import { status, onChange, sync, saveUser, loadUser, clearCache, getFailed, clearFailed } from './offline.js';
 import { $, $$, esc, toast, friendlyError, today } from './utils.js';
 import { icon } from './icons.js';
 import { openModal, formGrid, skeleton } from './ui.js';
@@ -15,6 +14,7 @@ const ROUTES = {
   payments:  { label: 'Payments & Debts', icon: 'payments', load: () => import('./pages/payments.js') },
   expenses:  { label: 'Expenses', icon: 'expenses', load: () => import('./pages/expenses.js') },
   reports:   { label: 'Reports', icon: 'reports', allow: isPartner, load: () => import('./pages/reports.js') },
+  users:     { label: 'Users', icon: 'users', allow: isOwner, load: () => import('./pages/users.js') },
 };
 const allowed = (k) => !ROUTES[k].allow || ROUTES[k].allow();
 
@@ -39,7 +39,7 @@ async function route() {
   try {
     const page = await ROUTES[key].load();
     $('#pageEyebrow').textContent = page.meta.eyebrow; $('#pageTitle').textContent = page.meta.title;
-    document.title = `${page.meta.title} · INV SYSTEM`;
+    document.title = `${page.meta.title} · Polythene Business Manager`;
     const el = document.createElement('div');
     await page.render(el, params);
     if (token !== navToken) return;          // user already navigated elsewhere
@@ -64,10 +64,8 @@ function buildNav() {
 const closeMenu = () => document.body.classList.remove('menu-open');
 $('#menuBtn').onclick = () => document.body.classList.toggle('menu-open');
 $('#scrim').onclick = closeMenu;
-$('#logoutBtn').onclick = async () => {
-  if (status().pending && !confirm(`${status().pending} entr${status().pending === 1 ? 'y has' : 'ies have'} not been sent yet. Sign out anyway? They stay saved on this device and will send after you sign in again with internet.`)) return;
-  clearCache(); supabase.auth.signOut();
-};
+$('#quickSaleBtn').onclick = () => { location.hash = '#/sales?new=1'; };
+$('#logoutBtn').onclick = () => supabase.auth.signOut();
 $('#todayLabel').textContent = new Date().toLocaleDateString('en-UG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
 async function showApp(user) {
@@ -80,11 +78,12 @@ async function showApp(user) {
       loginMessage('This account is not approved for the business system. Contact the owner.');
       return;
     }
-    session.user = user; session.profile = profile; saveUser({ id: user.id, email: user.email });
+    session.user = user; session.profile = profile;
     const name = profile.full_name || user.email;
     $('#userName').textContent = name; $('#userRole').textContent = roleLabel(); $('#userInitial').textContent = name.slice(0, 1).toUpperCase();
     buildNav();
     loginView.classList.add('hidden'); appView.classList.remove('hidden');
+    $('#quickSaleBtn').hidden = false;
     route();
   } catch (err) {
     console.error(err); shownFor = null;
@@ -134,22 +133,6 @@ $('#forgotBtn').onclick = async () => {
   error ? loginMessage(friendlyError(error)) : loginMessage('If that email has an account, a reset link has been sent.', true);
 };
 
-// ---------- offline status bar ----------
-const bar = $('#netBar');
-function drawBar(st = status()) {
-  const n = st.pending, plural = `${n} change${n === 1 ? '' : 's'}`;
-  let html = '', cls = 'net-bar';
-  if (st.failed) { cls += ' problem'; html = `${st.failed} saved entr${st.failed === 1 ? 'y' : 'ies'} could not be sent <button id="reviewBtn">Review</button>`; }
-  bar.className = html ? cls : 'net-bar hidden'; bar.innerHTML = html;
-  const rb = $('#reviewBtn'), sb = $('#syncBtn');
-  if (rb) rb.onclick = () => openModal({ eyebrow: 'OFFLINE ENTRIES', title: 'Not saved to the system', submitLabel: 'OK, clear this list',
-    body: `<p>The server refused these entries when internet returned. Please enter them again if needed.</p><ul class="list">${getFailed().map((f) => `<li><span><b>${esc(f.label)}</b><br><small class="muted">${esc(f.reason)}</small></span></li>`).join('')}</ul>`,
-    onSubmit: async () => { clearFailed(); } });
-  if (sb) sb.onclick = sync;
-}
-onChange(drawBar); drawBar();
-window.addEventListener('inv:synced', (e) => { toast(`${e.detail.done} saved entr${e.detail.done === 1 ? 'y' : 'ies'} sent to the system`); if (session.user && !$('#modal').open) route(); });
-
 // ---------- start ----------
 function init() {
   if (!isConfigured) {
@@ -157,8 +140,6 @@ function init() {
     $('#loginForm').querySelectorAll('input,button').forEach((x) => (x.disabled = true));
     return;
   }
-  // Opened with no internet? Go straight in with the last signed-in user.
-  setTimeout(() => { const u = loadUser(); if (!session.user && !navigator.onLine && u) showApp(u); }, 1500);
   supabase.auth.onAuthStateChange((event, s) => {
     // Never await Supabase calls directly inside this callback (can deadlock) — defer them.
     setTimeout(() => {
