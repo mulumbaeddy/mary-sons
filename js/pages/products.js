@@ -28,7 +28,7 @@ export async function render(el) {
     table = mountTable(el.querySelector('#tbl'), {
       empty: 'No products yet. Add your first product to start tracking stock.',
       columns: [
-        { label: 'Product', render: (p) => `<b>${esc(p.name)}</b><br><small class="muted">${esc(p.sku || 'No SKU')}</small>` },
+        { label: 'Product', render: (p) => `<b>${esc(p.name)}</b><br><small class="muted">Code: ${esc(p.sku || 'none — please add')}</small>` },
         { label: 'In stock', render: (p) => `<b>${stockText(p.stock_pieces, p.pieces_per_bundle)}</b><br><small class="muted">${num(p.stock_pieces)} packets total</small>` },
         { label: 'Bundle has', render: (p) => `${num(p.pieces_per_bundle)} packets` },
         ...(canEdit ? [{ label: 'Cost / bundle', align: 'right', render: (p) => money(Number(p.cost_per_piece) * Number(p.pieces_per_bundle)) }] : []),
@@ -47,7 +47,7 @@ export async function render(el) {
 
   const productFields = (p = {}) => [
     { name: 'name', label: 'Product name', value: p.name, required: true, full: true, placeholder: 'e.g. Clear bag 8x12' },
-    { name: 'sku', label: 'SKU / code (optional)', value: p.sku },
+    { name: 'sku', label: 'Product code', value: p.sku, required: true, placeholder: 'e.g. CB-812', help: 'Must be different for every product, even if the names are the same.' },
     { name: 'pieces_per_bundle', label: 'Packets in one bundle', type: 'number', min: 1, step: 'any', value: p.pieces_per_bundle ?? 100, required: true },
     { name: 'cost_per_bundle', label: 'Buying price per bundle (UGX)', type: 'number', min: 0, step: 'any', value: p.id ? Math.round(Number(p.cost_per_piece) * Number(p.pieces_per_bundle)) : '', required: true, help: 'What the producer charges you for one bundle.' },
     { name: 'selling_price_per_piece', label: 'Selling price per packet (UGX)', type: 'number', min: 0, step: 'any', value: p.selling_price_per_piece ?? '', required: true },

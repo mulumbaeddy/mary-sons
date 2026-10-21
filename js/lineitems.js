@@ -2,6 +2,7 @@
 // Quantities are entered in bundles or packets and always sent to the database as packets.
 import { esc, num, money, stockText } from './utils.js';
 
+export const label = (p) => (p.sku ? `${p.name} — ${p.sku}` : p.name);
 export const lineItemsMarkup = (kind) => `
   <div class="lines-head"><span>Product</span><span>Unit</span><span>Quantity</span><span>${kind === 'sale' ? 'Amount (UGX)' : 'Cost paid (UGX)'}</span><span></span></div>
   <div data-lines></div>
@@ -12,7 +13,7 @@ export function mountLineItems(form, products, kind, onTotal) {
   const box = form.querySelector('[data-lines]');
   const byId = Object.fromEntries(products.map((p) => [p.id, p]));
   const options = `<option value="">Select product…</option>` +
-    products.map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+    products.map((p) => `<option value="${p.id}">${esc(label(p))}</option>`).join('');
 
   const piecesOf = (row) => {
     const p = byId[row.querySelector('.l-prod').value];
@@ -73,10 +74,10 @@ export function mountLineItems(form, products, kind, onTotal) {
         const id = row.querySelector('.l-prod').value, pcs = piecesOf(row), amt = Number(row.querySelector('.l-total').value || 0);
         if (!id && !pcs && !amt) continue;
         if (!id) throw new Error('Choose a product on every line.');
-        if (seen.has(id)) throw new Error(`${byId[id].name} appears twice. Combine it into one line.`);
-        if (pcs <= 0) throw new Error(`Enter a quantity for ${byId[id].name}.`);
-        if (amt <= 0) throw new Error(`Enter the amount for ${byId[id].name}.`);
-        if (kind === 'sale' && pcs > Number(byId[id].stock_pieces)) throw new Error(`Not enough stock for ${byId[id].name}.`);
+        if (seen.has(id)) throw new Error(`${label(byId[id])} appears twice. Combine it into one line.`);
+        if (pcs <= 0) throw new Error(`Enter a quantity for ${label(byId[id])}.`);
+        if (amt <= 0) throw new Error(`Enter the amount for ${label(byId[id])}.`);
+        if (kind === 'sale' && pcs > Number(byId[id].stock_pieces)) throw new Error(`Not enough stock for ${label(byId[id])}.`);
         seen.add(id);
         out.push({ product_id: id, quantity_pieces: pcs, line_total: amt });
       }
