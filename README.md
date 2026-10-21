@@ -20,7 +20,7 @@ Currency: UGX. Your original tables are **unchanged**.
 Roles: **Owner** (everything) · **Partner** (stock, purchases, reports) · **Staff** (sales, expenses, customer payments).
 
 ## Setup
-1. **Supabase → SQL Editor**: run `sql/01_schema.sql` (your original tables), then `sql/02_logic.sql` (functions, security, reports). Both are safe to run again.
+1. **Supabase → SQL Editor**: run `sql/01_schema.sql` (your original tables), then `sql/02_logic.sql` (functions, security, reports), then `sql/03_delete_product.sql` (product deletion). Both are safe to run again.
    - On an existing database that already has data, only run `02_logic.sql`.
 2. **config.js**: your URL and anon key are already filled in. Set `BUSINESS_NAME` for receipts. The anon key is meant to be public; protection comes from the database rules. Never use the `service_role` key here.
 3. **Create users**: Supabase → Authentication → Users → Add user (tick *Auto confirm*). Everyone starts as Staff. Make yourself owner once:
@@ -43,6 +43,7 @@ js/lineitems.js     product-lines editor for sales and purchases
 js/pages/*.js       one file per page
 sql/01_schema.sql   your original tables
 sql/02_logic.sql    stock logic, security rules, report function
+sql/03_delete_product.sql   lets you delete products (run once)
 ```
 
 ## How the numbers work

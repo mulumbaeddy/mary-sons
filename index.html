@@ -4,20 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#01605a">
-  <title>Polythene Business Manager</title>
+  <title>INV SYSTEM</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="INV SYSTEM">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Manrope:wght@700;800&display=swap">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <!-- ===== Sign in ===== -->
   <div id="loginView" class="login-wrap">
     <section class="login-card">
-      <div class="brand-mark">PB</div>
-      <p class="eyebrow">BUSINESS MANAGEMENT</p>
-      <h1>Polythene Bags Manager</h1>
-      <p class="muted">Stock, purchases, sales, debts and profit in one place.</p>
+      <div class="brand-mark">INV</div>
+      <h1 class="wordmark"><span class="inv">INV</span> SYSTEM</h1>
       <form id="loginForm">
         <label for="email">Email address</label>
         <input id="email" type="email" autocomplete="username" required placeholder="">
@@ -33,10 +37,11 @@
   <!-- ===== App ===== -->
   <div id="appView" class="shell hidden">
     <aside class="sidebar" id="sidebar">
-      <div class="side-brand"><span class="brand-mark small">PB</span><div><strong>Polythene</strong><small>Business Manager</small></div></div>
+      <div class="side-brand"><span class="brand-mark small">INV</span><div><strong class="wordmark-side"><span class="inv">INV</span> SYSTEM</strong></div></div>
       <nav id="mainNav" aria-label="Main"></nav>
       <div class="sidebar-bottom">
         <div class="user-chip"><span class="avatar" id="userInitial">U</span><div><strong id="userName">User</strong><small id="userRole"></small></div></div>
+        <button id="installBtn" class="outline install-btn" hidden>Install app</button>
         <div class="side-buttons"><button id="changePwBtn" class="ghost">Password</button><button id="logoutBtn" class="ghost">Sign out</button></div>
       </div>
     </aside>
@@ -49,15 +54,17 @@
         <div class="top-actions"><span class="date-pill" id="todayLabel"></span><button class="primary" id="quickSaleBtn" hidden>+ New sale</button></div>
       </header>
       <section id="pageContent" aria-live="polite"></section>
-      <footer>Polythene Business Manager <span>•</span> Currency: UGX</footer>
+      <footer>INV SYSTEM <span>•</span> Currency: UGX</footer>
     </main>
   </div>
 
+  <div id="netBar" class="net-bar hidden" role="status"></div>
   <dialog id="modal"></dialog>
   <div id="printArea"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
   <script src="config.js"></script>
   <script type="module" src="js/main.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>

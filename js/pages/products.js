@@ -111,7 +111,7 @@ export async function render(el) {
         case 'export': return downloadCSV('products.csv', [['Product', 'SKU', 'Packets per bundle', 'Stock (packets)', 'Cost per packet', 'Price per packet', 'Reorder level'],
           ...products.map((x) => [x.name, x.sku, x.pieces_per_bundle, x.stock_pieces, x.cost_per_piece, x.selling_price_per_piece, x.reorder_level])]);
         case 'delete':
-          if (await confirmDialog({ title: 'Delete product?', message: `Delete <b>${esc(p.name)}</b>? This also removes its stock history. A product that is still on a recorded sale or purchase cannot be deleted until you cancel those first.`, confirmLabel: 'Delete', danger: true })) {
+          if (await confirmDialog({ title: 'Delete product?', message: `Delete <b>${esc(p.name)}</b>? Its stock history is deleted too. A product used in an active sale or purchase cannot be deleted until that sale or purchase is cancelled.`, confirmLabel: 'Delete', danger: true })) {
             await api.deleteProduct(p.id); toast('Product deleted'); await reload();
           }
       }

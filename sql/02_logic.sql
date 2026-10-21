@@ -64,27 +64,6 @@ begin
   values(p_product_id,'adjustment',p_new_pieces - v_p.stock_pieces,v_p.cost_per_piece,'ADJUST',trim(p_reason),auth.uid());
 end $$;
 
-
--- Delete a product (owner only). Allowed only when no live sale or purchase uses it.
--- Its leftover stock history (opening stock, cancelled sales/purchases) is removed with it.
-create or replace function public.delete_product(p_product_id uuid)
-returns void language plpgsql security definer set search_path=public
-as $$
-begin
-  if not public.has_role(array['owner']) then raise exception 'Only the owner can delete products'; end if;
-  if not exists (select 1 from public.products where id = p_product_id) then raise exception 'Product not found'; end if;
-  if exists (select 1 from public.stock_movements m join public.sales s on s.sale_no = m.reference
-              where m.product_id = p_product_id and m.movement_type = 'sale') then
-    raise exception 'This product is on a recorded sale. Cancel that sale first, then delete the product.';
-  end if;
-  if exists (select 1 from public.stock_movements m join public.purchases pu on pu.purchase_no = m.reference
-              where m.product_id = p_product_id and m.movement_type = 'purchase') then
-    raise exception 'This product is on a recorded purchase. Cancel that purchase first, then delete the product.';
-  end if;
-  delete from public.stock_movements where product_id = p_product_id;
-  delete from public.products where id = p_product_id;
-end $$;
-
 -- ---------- sales ----------------------------------------------------
 -- (columns named "pieces" count PACKETS in this business)
 -- p_items = [{"product_id": "...", "quantity_pieces": 200, "line_total": 30000}, ...]
@@ -366,6 +345,8 @@ end $$;
 
 create policy "partner edit products"   on public.products for update to authenticated
   using (public.has_role(array['owner','mother'])) with check (public.has_role(array['owner','mother']));
+create policy "owner delete products"   on public.products for delete to authenticated
+  using (public.has_role(array['owner']));
 create policy "active add expenses"     on public.expenses for insert to authenticated
   with check (public.is_active_user() and created_by = auth.uid());
 create policy "owner edit expenses"     on public.expenses for update to authenticated
@@ -378,6 +359,7 @@ revoke insert, update, delete on public.products, public.purchases, public.sales
 grant select on public.products, public.purchases, public.sales, public.payments,
        public.stock_movements, public.expenses, public.profiles to authenticated;
 grant update (name, sku, pieces_per_bundle, cost_per_piece, selling_price_per_piece, reorder_level) on public.products to authenticated;
+grant delete on public.products to authenticated;
 grant insert, update, delete on public.expenses to authenticated;
 grant select on public.v_sale_lines, public.v_purchase_lines to authenticated;
 
@@ -387,7 +369,7 @@ declare f text;
 begin
   foreach f in array array[
     'create_product(text,text,numeric,numeric,numeric,numeric,numeric)',
-    'adjust_stock(uuid,numeric,text)', 'delete_product(uuid)',
+    'adjust_stock(uuid,numeric,text)',
     'create_sale(text,date,text,numeric,text,jsonb)',
     'create_purchase(text,date,numeric,text,jsonb)',
     'record_payment(text,uuid,numeric,text,date,text)',
