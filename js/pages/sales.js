@@ -28,6 +28,7 @@ function receiptHtml(sale, lines, products = []) {
 
 export async function render(el, params) {
   let [sales, products] = await Promise.all([api.listSales(), api.listProducts()]);
+  let names = await api.partyNames();
   let term = '', status = 'all', table;
   const balanceOf = (s) => Number(s.total_amount) - Number(s.amount_paid);
 
@@ -42,7 +43,7 @@ export async function render(el, params) {
       statCard('Outstanding', money(f.reduce((a, s) => a + balanceOf(s), 0)), 'Still owed by customers', 'alert', 'warn');
   };
   const refresh = () => { table.setRows(filtered()); summary(); };
-  const reload = async () => { [sales, products] = await Promise.all([api.listSales(), api.listProducts()]); refresh(); };
+  const reload = async () => { [sales, products] = await Promise.all([api.listSales(), api.listProducts()]); names = await api.partyNames(); refresh(); };
 
   el.innerHTML = `<div id="summary" class="stats-grid three"></div>
     <div class="toolbar"><div class="search">${icon('search', 16)}<input id="q" placeholder="Search sale no. or customer…"></div>
@@ -82,7 +83,7 @@ export async function render(el, params) {
   }
 
   function newSale() {
-    const customers = [...new Set(sales.map((s) => s.customer_name).filter((n) => n !== 'Walk-in'))];
+    const customers = names;
     const available = products.filter((p) => Number(p.stock_pieces) > 0);
     if (!available.length) { toast('Add products and stock before recording a sale.', 'error'); return; }
     let editor, paidTouched = false;

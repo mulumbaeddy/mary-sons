@@ -20,7 +20,7 @@ export async function render(el) {
   function draw() {
     const openSales = sales.filter((s) => owing(s) > 0), openPurch = purchases.filter((p) => owing(p) > 0);
     const owedToUs = openSales.reduce((a, s) => a + owing(s), 0), weOwe = openPurch.reduce((a, p) => a + owing(p), 0);
-    const tabs = [['customers', 'Customer debts'], ...(isPartner() ? [['suppliers', 'Supplier debts']] : []), ['history', 'Payment history']];
+    const tabs = [['customers', 'Customer debts'], ...(isPartner() ? [['suppliers', 'Supplier debts'], ['net', 'Net balances']] : []), ['history', 'Payment history']];
     el.innerHTML = `<div class="stats-grid three">
         ${statCard('Customers owe us', money(owedToUs), `${openSales.length} unpaid sale${openSales.length === 1 ? '' : 's'}`, 'sales', owedToUs ? 'warn' : '')}
         ${isPartner() ? statCard('We owe suppliers', money(weOwe), `${openPurch.length} unpaid purchase${openPurch.length === 1 ? '' : 's'}`, 'purchases') : ''}
@@ -41,6 +41,19 @@ export async function render(el) {
         { label: 'Total', align: 'right', render: (s) => money(s.total_amount) }, { label: 'Balance', align: 'right', render: (s) => `<b class="neg">${money(owing(s))}</b>` },
         { label: 'Status', render: (s) => badge(s.payment_status) },
         { label: '', align: 'right', render: (s) => iconBtn('check', 'paysale', s.id, 'Receive payment') }] }).setRows(openSales);
+    } else if (tab === 'net') {
+      // People who are both a customer and a supplier: what they owe you minus what you owe them.
+      const by = {};
+      const add = (name, key, amt) => { const k = name.trim().toLowerCase(); (by[k] ||= { name: name.trim(), owes: 0, owed: 0 })[key] += amt; };
+      openSales.forEach((s) => add(s.customer_name, 'owes', owing(s)));
+      openPurch.forEach((p) => add(p.supplier_name, 'owed', owing(p)));
+      const rows = Object.values(by).filter((g) => g.owes > 0 && g.owed > 0).map((g) => ({ ...g, net: g.owes - g.owed })).sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+      body.innerHTML = panel('Customers who are also suppliers', 'Matched by name. Net = what they owe you minus what you owe them. Settle each side from its own tab.', '<div id="t1"></div>');
+      mountTable(body.querySelector('#t1'), { empty: 'No one is both owing you and owed by you right now.', columns: [
+        { label: 'Name', render: (g) => `<b>${esc(g.name)}</b>` },
+        { label: 'Owes you', align: 'right', render: (g) => money(g.owes) },
+        { label: 'You owe them', align: 'right', render: (g) => money(g.owed) },
+        { label: 'Net', align: 'right', render: (g) => g.net >= 0 ? `<b class="pos">${money(g.net)} they owe you</b>` : `<b class="neg">${money(-g.net)} you owe them</b>` }] }).setRows(rows);
     } else if (tab === 'suppliers') {
       body.innerHTML = panel('Unpaid purchases', 'Money you still owe suppliers', '<div id="t1"></div>');
       mountTable(body.querySelector('#t1'), { empty: 'You do not owe any supplier.', columns: [

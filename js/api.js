@@ -123,3 +123,13 @@ export const voidPurchase = (id) => { needsOnline('Cancelling a purchase'); noPe
 export const deleteExpense = (id) => { needsOnline('Deleting an expense'); noPending(id, 'Cannot delete'); return supabase.from('expenses').delete().eq('id', id).then(unwrap); };
 
 export const loadProfile = (id) => cached('profile:' + id, () => supabase.from('profiles').select('full_name,role,active').eq('id', id).maybeSingle().then(unwrap));
+
+// Every customer and supplier name used so far, so a person who is both is picked from one list.
+export const partyNames = async () => {
+  const [sales, purchases] = await Promise.all([listSales().catch(() => []), listPurchases().catch(() => [])]);
+  const seen = new Map();
+  [...sales.map((x) => x.customer_name), ...purchases.map((x) => x.supplier_name)].forEach((n) => {
+    const t = String(n || '').trim(); if (t && t.toLowerCase() !== 'walk-in' && !seen.has(t.toLowerCase())) seen.set(t.toLowerCase(), t);
+  });
+  return [...seen.values()].sort((a, b) => a.localeCompare(b));
+};

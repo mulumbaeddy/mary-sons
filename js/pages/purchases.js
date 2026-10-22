@@ -22,7 +22,9 @@ export async function render(el) {
       statCard('We still owe', money(f.reduce((a, p) => a + balanceOf(p), 0)), 'Unpaid supplier balances', 'alert', 'warn');
     table.setRows(f);
   };
-  const reload = async () => { [purchases, products] = await Promise.all([api.listPurchases(), api.listProducts()]); refresh(); };
+  let names = [];
+  api.partyNames().then((n) => { names = n; });
+  const reload = async () => { [purchases, products] = await Promise.all([api.listPurchases(), api.listProducts()]); names = await api.partyNames(); refresh(); };
 
   el.innerHTML = `<div id="summary" class="stats-grid three"></div>
     <div class="toolbar"><div class="search">${icon('search', 16)}<input id="q" placeholder="Search purchase no. or supplier…"></div><span class="spacer"></span>
@@ -59,7 +61,7 @@ export async function render(el) {
 
   function newPurchase() {
     if (!products.length) { toast('Add a product first, then record the purchase.', 'error'); return; }
-    const suppliers = [...new Set(purchases.map((p) => p.supplier_name))];
+    const suppliers = names;
     let editor, paidTouched = false;
     openModal({
       eyebrow: 'NEW PURCHASE', title: 'Record purchase', wide: true, submitLabel: 'Save purchase',
