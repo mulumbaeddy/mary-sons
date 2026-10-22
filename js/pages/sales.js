@@ -1,6 +1,6 @@
 import * as api from '../api.js';
 import { isOwner } from '../store.js';
-import { esc, money, num, today, fmtDate, toast, friendlyError, downloadCSV, printHtml } from '../utils.js';
+import { esc, money, num, stockText, today, fmtDate, toast, friendlyError, downloadCSV, printHtml } from '../utils.js';
 import { panel, btn, iconBtn, badge, mountTable, openModal, formGrid, formValues, confirmDialog, statCard } from '../ui.js';
 import { lineItemsMarkup, mountLineItems } from '../lineitems.js';
 import { openPaymentModal } from '../payment-modal.js';
@@ -10,12 +10,16 @@ export const meta = { eyebrow: 'REVENUE', title: 'Sales' };
 
 const cfg = () => window.APP_CONFIG || {};
 
-function receiptHtml(sale, lines) {
+// "Name — CODE" and the quantity the way the shop counts it (e.g. 1 bundle + 2 packets).
+const itemName = (l, products) => { const p = products.find((x) => x.id === l.product_id); return p?.sku ? `${l.product_name} — ${p.sku}` : l.product_name; };
+const itemQty = (l, products) => { const p = products.find((x) => x.id === l.product_id); return p ? stockText(l.quantity_pieces, p.pieces_per_bundle) : `${num(l.quantity_pieces)} packets`; };
+
+function receiptHtml(sale, lines, products = []) {
   const bal = Number(sale.total_amount) - Number(sale.amount_paid);
   return `<div class="receipt"><h2>${esc(cfg().BUSINESS_NAME || 'Receipt')}</h2>${cfg().BUSINESS_PHONE ? `<p>${esc(cfg().BUSINESS_PHONE)}</p>` : ''}
     <p><b>Receipt ${esc(sale.sale_no)}</b><br>${fmtDate(sale.sale_date)} · ${esc(sale.customer_name)}</p>
-    <table><thead><tr><th>Item</th><th class="right">Packets</th><th class="right">Amount</th></tr></thead><tbody>
-    ${lines.map((l) => `<tr><td>${esc(l.product_name)}</td><td class="right">${num(l.quantity_pieces)}</td><td class="right">${money(l.line_total)}</td></tr>`).join('')}</tbody>
+    <table><thead><tr><th>Item</th><th class="right">Quantity</th><th class="right">Amount</th></tr></thead><tbody>
+    ${lines.map((l) => `<tr><td>${esc(itemName(l, products))}</td><td class="right">${esc(itemQty(l, products))}</td><td class="right">${money(l.line_total)}</td></tr>`).join('')}</tbody>
     <tfoot><tr><td colspan="2">Total</td><td class="right">${money(sale.total_amount)}</td></tr>
     <tr><td colspan="2">Paid</td><td class="right">${money(sale.amount_paid)}</td></tr>
     <tr><td colspan="2"><b>Balance due</b></td><td class="right"><b>${money(bal)}</b></td></tr></tfoot></table>
@@ -69,11 +73,11 @@ export async function render(el, params) {
       eyebrow: 'SALE', title: `${s.sale_no} — ${s.customer_name}`, wide: true,
       extraActions: `<button type="button" class="outline" data-print>${icon('printer', 16)} Print receipt</button>`,
       body: `<p class="muted">${fmtDate(s.sale_date)} · ${esc(s.payment_method.replace('_', ' '))}${s.notes ? ` · ${esc(s.notes)}` : ''}</p>
-        <div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Packets</th><th class="right">Amount</th></tr></thead><tbody>
-        ${lines.map((l) => `<tr><td>${esc(l.product_name)}</td><td class="right">${num(l.quantity_pieces)}</td><td class="right">${money(l.line_total)}</td></tr>`).join('')
+        <div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Quantity</th><th class="right">Amount</th></tr></thead><tbody>
+        ${lines.map((l) => `<tr><td>${esc(itemName(l, products))}</td><td class="right">${esc(itemQty(l, products))}</td><td class="right">${money(l.line_total)}</td></tr>`).join('')
           || '<tr><td colspan="3"><div class="empty">No item details were recorded for this sale.</div></td></tr>'}</tbody></table></div>
         <div class="totals"><span>Total</span><b>${money(s.total_amount)}</b><span>Paid</span><b>${money(s.amount_paid)}</b><span>Balance</span><b class="${balanceOf(s) > 0 ? 'neg' : ''}">${money(balanceOf(s))}</b></div>`,
-      onOpen: (form) => form.querySelector('[data-print]').addEventListener('click', () => printHtml(receiptHtml(s, lines))),
+      onOpen: (form) => form.querySelector('[data-print]').addEventListener('click', () => printHtml(receiptHtml(s, lines, products))),
     });
   }
 
@@ -111,7 +115,7 @@ export async function render(el, params) {
         toast('Sale saved'); await reload();
         const s = sales.find((x) => x.id === id);
         if (s && await confirmDialog({ title: 'Sale saved', message: 'Print a receipt for this sale?', confirmLabel: 'Print receipt' })) {
-          printHtml(receiptHtml(s, await api.saleLines(id)));
+          printHtml(receiptHtml(s, await api.saleLines(id), products));
         }
       },
     });

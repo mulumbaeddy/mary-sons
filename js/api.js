@@ -58,7 +58,7 @@ export const saleLines     = async (saleId) => {
   if (isLocalId(saleId)) {
     const item = getQueue().find((x) => x.localId === saleId); if (!item) return [];
     const prods = await listProducts();
-    return item.args[0].items.map((i) => ({ product_name: prods.find((p) => p.id === i.product_id)?.name || 'Item', quantity_pieces: i.quantity_pieces, line_total: i.line_total }));
+    return item.args[0].items.map((i) => ({ product_id: i.product_id, product_name: prods.find((p) => p.id === i.product_id)?.name || 'Item', quantity_pieces: i.quantity_pieces, line_total: i.line_total }));
   }
   return cached('saleLines:' + saleId, () => supabase.from('v_sale_lines').select('*').eq('sale_id', saleId).then(unwrap));
 };
@@ -66,7 +66,7 @@ export const purchaseLines = async (purchaseId) => {
   if (isLocalId(purchaseId)) {
     const item = getQueue().find((x) => x.localId === purchaseId); if (!item) return [];
     const prods = await listProducts();
-    return item.args[0].items.map((i) => ({ product_name: prods.find((p) => p.id === i.product_id)?.name || 'Item', quantity_pieces: i.quantity_pieces, line_total: i.line_total }));
+    return item.args[0].items.map((i) => ({ product_id: i.product_id, product_name: prods.find((p) => p.id === i.product_id)?.name || 'Item', quantity_pieces: i.quantity_pieces, line_total: i.line_total }));
   }
   return cached('purchaseLines:' + purchaseId, () => supabase.from('v_purchase_lines').select('*').eq('purchase_id', purchaseId).then(unwrap));
 };

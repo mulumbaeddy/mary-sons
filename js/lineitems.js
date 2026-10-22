@@ -69,18 +69,19 @@ export function mountLineItems(form, products, kind, onTotal) {
     total,
     // Returns [{product_id, quantity_pieces, line_total}] or throws a readable error.
     items() {
-      const out = [], seen = new Set();
+      const merged = new Map();   // same product on several lines (bundles + loose packets) is added together
       for (const row of box.children) {
         const id = row.querySelector('.l-prod').value, pcs = piecesOf(row), amt = Number(row.querySelector('.l-total').value || 0);
         if (!id && !pcs && !amt) continue;
         if (!id) throw new Error('Choose a product on every line.');
-        if (seen.has(id)) throw new Error(`${label(byId[id])} appears twice. Combine it into one line.`);
         if (pcs <= 0) throw new Error(`Enter a quantity for ${label(byId[id])}.`);
         if (amt <= 0) throw new Error(`Enter the amount for ${label(byId[id])}.`);
-        if (kind === 'sale' && pcs > Number(byId[id].stock_pieces)) throw new Error(`Not enough stock for ${label(byId[id])}.`);
-        seen.add(id);
-        out.push({ product_id: id, quantity_pieces: pcs, line_total: amt });
+        const m = merged.get(id) || { product_id: id, quantity_pieces: 0, line_total: 0 };
+        m.quantity_pieces = +(m.quantity_pieces + pcs).toFixed(4); m.line_total = +(m.line_total + amt).toFixed(2);
+        merged.set(id, m);
       }
+      const out = [...merged.values()];
+      for (const m of out) if (kind === 'sale' && m.quantity_pieces > Number(byId[m.product_id].stock_pieces)) throw new Error(`Not enough stock for ${label(byId[m.product_id])}.`);
       if (!out.length) throw new Error('Add at least one product.');
       return out;
     },
