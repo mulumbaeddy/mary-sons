@@ -100,7 +100,7 @@ begin
     select * into v_prod from public.products where id = (v_item->>'product_id')::uuid for update;
     if not found then raise exception 'A product on this sale no longer exists'; end if;
     if v_prod.stock_pieces < v_qty then
-      raise exception 'Not enough stock for % (available: % packets)', v_prod.name, v_prod.stock_pieces;
+      raise exception 'Not enough stock for % (available: % pieces)', v_prod.name, v_prod.stock_pieces;
     end if;
     update public.products set stock_pieces = stock_pieces - v_qty where id = v_prod.id;
     insert into public.stock_movements(product_id,movement_type,quantity_pieces,unit_cost,reference,notes,created_by)

@@ -30,7 +30,7 @@ export function reportBody(r, from, to) {
         ${row('Customers still owe (all time)', `<b class="neg">${money(r.customer_debt)}</b>`)}${row('We owe suppliers (all time)', money(r.supplier_debt))}
         ${row('Stock value now', money(r.stock_value))}${row('Products low on stock', r.low_stock_count)}</tbody></table></section></div>
     <div class="content-grid">
-      <section class="panel"><div class="panel-head"><h2>Best-selling products</h2></div>${r.top_products.length ? `<div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Packets</th><th class="right">Sales</th><th class="right">Profit</th></tr></thead><tbody>
+      <section class="panel"><div class="panel-head"><h2>Best-selling products</h2></div>${r.top_products.length ? `<div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Pieces</th><th class="right">Sales</th><th class="right">Profit</th></tr></thead><tbody>
         ${r.top_products.map((p) => `<tr><td>${esc(p.name)}</td><td class="right">${num(p.pieces)}</td><td class="right">${money(p.revenue)}</td><td class="right">${money(p.revenue - p.cost)}</td></tr>`).join('')}</tbody></table></div>` : emptyState('No sales in this period.')}</section>
       <section class="panel"><div class="panel-head"><h2>Expenses by category</h2></div>${r.expenses_by_category.length ? `<table class="plain"><tbody>
         ${r.expenses_by_category.map((e) => row(esc(e.category), money(e.total))).join('')}</tbody></table>` : emptyState('No expenses in this period.')}</section></div>

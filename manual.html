@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INV SYSTEM — User Manual</title>
+<style>
+:root{--teal:#01605a;--orange:#ff862d;--ink:#15292a;--line:#e3eae9;--soft:#e6f2f0}
+*{box-sizing:border-box}body{margin:0;font:600 17px/1.6 "DM Sans",system-ui,sans-serif;color:var(--ink);background:#f3f7f6}
+main{max-width:820px;margin:0 auto;padding:28px 18px 60px}
+header{background:var(--teal);color:#fff;border-radius:18px;padding:28px;margin-bottom:22px}
+header h1{margin:0;font-size:2rem;letter-spacing:.02em}header h1 span{color:var(--orange)}header p{margin:6px 0 0;opacity:.9}
+section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:16px}
+h2{margin:0 0 8px;color:var(--teal);font-size:1.3rem}h3{margin:16px 0 4px;font-size:1.05rem}
+ol,ul{padding-left:22px;margin:6px 0}li{margin:4px 0}
+.tip{background:var(--soft);border-left:4px solid var(--teal);border-radius:8px;padding:10px 14px;margin:10px 0}
+.warn{background:#fff3dc;border-left:4px solid #b86a00;border-radius:8px;padding:10px 14px;margin:10px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft)}
+nav a{color:var(--teal);text-decoration:none;display:inline-block;margin:2px 10px 2px 0}
+@media print{body{background:#fff}section{break-inside:avoid;border:0;padding:8px 0}header{border-radius:0}}
+</style></head><body><main>
+<header><h1><span>INV</span> SYSTEM</h1><p>User Manual — stock, purchases, sales, debts and profit in one place</p></header>
+
+<section><h2>Contents</h2><nav>
+<a href="#start">1. Getting started</a><a href="#words">2. How we count</a><a href="#dash">3. Dashboard</a><a href="#products">4. Products &amp; Stock</a><a href="#purchases">5. Purchases</a><a href="#sales">6. Sales</a><a href="#pay">7. Payments &amp; Debts</a><a href="#exp">8. Expenses</a><a href="#reports">9. Reports</a><a href="#offline">10. Working offline</a><a href="#roles">11. Who can do what</a><a href="#help">12. Problems &amp; answers</a></nav></section>
+
+<section id="start"><h2>1. Getting started</h2>
+<h3>Sign in</h3><ol><li>Open INV SYSTEM and type your email and password.</li><li>Press <b>Sign in</b>. Forgot your password? Type your email, then press <b>Forgot password?</b> and follow the email link.</li><li>Accounts are created by the owner (in Supabase). There is no public sign-up.</li></ol>
+<h3>Install it on your phone or computer</h3><ul><li><b>Android / Chrome:</b> press <b>Install app</b> in the menu (or Chrome ⋮ → <i>Install app</i>).</li><li><b>iPhone / Safari:</b> press Share → <i>Add to Home Screen</i>.</li><li>It then opens like a normal app, with its own icon.</li></ul>
+<h3>Moving around</h3><p>On a computer the menu is on the left. On a phone, press the <b>☰</b> button (top-left, always visible) to open it. <b>Password</b> changes your password; <b>Sign out</b> leaves the app.</p></section>
+
+<section id="words"><h2>2. How we count: cartons and pieces</h2>
+<p>The system counts stock in <b>pieces</b>. Your supplier sells in <b>cartons</b>, and each product has a fixed number of pieces in one carton.</p>
+<div class="tip">Example: a carton of <i>NZIWA — 9X6</i> holds 100 pieces. You have 250 pieces in stock → the system shows <b>2 cartons + 50 pieces</b>.</div>
+<ul><li>You <b>buy</b> mostly in cartons.</li><li>You <b>sell</b> in pieces or cartons. Your selling price is <b>per piece</b>; selling a carton = pieces × price (you can change the amount on the line).</li><li>Every product has a <b>code</b>. Two products can share a name, but never a code.</li></ul></section>
+
+<section id="dash"><h2>3. Dashboard</h2>
+<p>Your day at a glance: today's sales, customers who owe you, low-stock items, and recent sales. Partners and the owner also see 30-day profit, stock value and a 14-day sales chart.</p></section>
+
+<section id="products"><h2>4. Products &amp; Stock</h2>
+<h3>Add a product</h3><ol><li>Open <b>Products &amp; Stock</b> → <b>Add product</b>.</li><li>Fill in: <b>Product name</b>, <b>Product code</b> (required, unique), <b>Pieces in one carton</b>, <b>Buying price per carton</b>, <b>Selling price per piece</b>, <b>Low-stock alert</b> (in pieces).</li><li>Type the <b>Opening stock (cartons)</b> you already have today, then save.</li></ol>
+<h3>Other actions</h3>
+<table><tr><th>Action</th><th>What it does</th></tr>
+<tr><td>Edit</td><td>Change name, code, prices, alert level. (To change quantity use Adjust stock.)</td></tr>
+<tr><td>Adjust stock</td><td>Type the real count after a stock-take and give a reason. It is recorded in the history.</td></tr>
+<tr><td>History</td><td>Every change to that product: opening, purchases, sales, adjustments.</td></tr>
+<tr><td>Delete</td><td>Removes a product and its history. Not allowed while an active sale or purchase uses it — cancel that sale/purchase first.</td></tr>
+<tr><td>Export CSV</td><td>Download the product list for Excel.</td></tr></table>
+<div class="warn">Deleting a product is permanent. If you only want to stop selling it, leave it with zero stock.</div></section>
+
+<section id="purchases"><h2>5. Purchases (owner &amp; partner)</h2>
+<p>Record stock you buy from a supplier. Stock goes up automatically.</p>
+<ol><li><b>Purchases → New purchase</b>.</li><li>Enter the supplier and date.</li><li>Choose the product (shown as <i>Name — CODE</i>), the unit (<b>Cartons</b> or <b>Pieces</b>), the quantity and the cost paid. Use <b>+ Add another product</b> for more items.</li><li>Enter the <b>amount paid now</b>. Anything unpaid becomes a supplier debt.</li><li>Save.</li></ol>
+<p>Cancelling a purchase (trash icon) removes it and takes the stock back out.</p></section>
+
+<section id="sales"><h2>6. Sales</h2>
+<h3>Record a sale</h3><ol>
+<li>Open <b>Sales</b> and press <b>New sale</b>. (This button only appears on the Sales page.)</li>
+<li>Enter the customer (default <i>Walk-in</i>) and the date.</li>
+<li>Pick the product — it shows as <i>Name — CODE</i> — then choose <b>Pieces</b> or <b>Cartons</b> and the quantity. The amount fills in from the selling price; you may change it.</li>
+<li>Selling a carton <i>and</i> loose pieces of the same product? Add the product on two lines. The system adds them together on one receipt line, e.g. <b>1 carton + 2 pieces</b>.</li>
+<li>Choose the payment method: <b>Cash</b>, <b>Mobile money</b> or <b>Credit (pay later)</b>. For credit you must type the customer's name.</li>
+<li>Check <b>Amount received now</b>. The rest is recorded as the customer's debt.</li>
+<li>Press <b>Save sale</b>. Stock reduces automatically. You can print the receipt straight away.</li></ol>
+<h3>Receipts and other actions</h3>
+<ul><li><b>👁 View</b> shows the items; <b>Print receipt</b> prints it with product, code, quantity (cartons + pieces), total, paid and balance due.</li><li><b>Receive payment</b> on an unpaid sale records money from the customer.</li><li><b>Cancel sale</b> (owner only) deletes the sale and returns the stock.</li><li>Search by sale number or customer; filter by Paid / Partial / Unpaid; <b>Export CSV</b> for Excel.</li></ul>
+<div class="tip">You cannot sell more than you have. The system warns <i>Not enough stock</i>.</div></section>
+
+<section id="pay"><h2>7. Payments &amp; Debts</h2>
+<ul><li><b>Customer debts</b> — who owes you, how much, since when. Press the ✔ icon to receive a payment.</li><li><b>Supplier debts</b> (owner &amp; partner) — what you still owe suppliers. Pay them from here.</li><li><b>Payment history</b> — every payment received or paid out.</li></ul>
+<p>A payment can be partial. The status moves Unpaid → Partial → Paid automatically.</p></section>
+
+<section id="exp"><h2>8. Expenses</h2>
+<p>Record business costs: Transport, Rent, Utilities, Labour, Packaging, Communication, Other.</p>
+<ol><li><b>Expenses → Add expense</b>.</li><li>Choose the date, category, amount and who paid (the business or a person), add a description, and save.</li></ol>
+<p>Filter by category to see totals. Only the owner can delete an expense.</p></section>
+
+<section id="reports"><h2>9. Reports (owner &amp; partner)</h2>
+<ol><li>Open <b>Reports</b> and choose a period (this week, this month, or custom dates).</li><li>You get: profit summary, cash &amp; balances, best-selling products, expenses by category, and daily sales.</li><li>Press print to produce a report you can hand to your partner.</li></ol>
+<p><b>Profit</b> = sales − cost of the goods sold − expenses.</p></section>
+
+<section id="offline"><h2>10. Working offline</h2>
+<p>The app keeps working without internet, like WhatsApp.</p>
+<ul><li>Open the app with internet <b>once</b> so it can save your data. After that it opens offline.</li><li>While offline you can record <b>sales, purchases, payments, expenses, new products and stock adjustments</b>. They show as <b>PENDING</b> and stock updates straight away.</li><li>When internet returns they are sent to the system automatically, in the order you made them. You will see a message when done.</li><li>If the system refuses an entry (for example, stock ran out because someone else sold it), a <b>red bar</b> appears. Press <b>Review</b> to see which entry and why, then enter it again if needed.</li></ul>
+<div class="warn"><b>Needs internet:</b> cancelling sales or purchases, deleting products or expenses, and editing products. Don't sign out while entries are still pending.</div></section>
+
+<section id="roles"><h2>11. Who can do what</h2>
+<table><tr><th></th><th>Owner</th><th>Partner</th><th>Staff</th></tr>
+<tr><td>Record sales, receive payments, add expenses</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>View products and stock</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>Add/edit/adjust/delete products</td><td>✔</td><td>✔</td><td>—</td></tr>
+<tr><td>Purchases and supplier debts</td><td>✔</td><td>✔</td><td>—</td></tr>
+<tr><td>Reports and profit</td><td>✔</td><td>✔</td><td>—</td></tr>
+<tr><td>Cancel sales, delete expenses</td><td>✔</td><td>—</td><td>—</td></tr></table></section>
+
+<section id="help"><h2>12. Problems &amp; answers</h2>
+<table>
+<tr><th>Problem</th><th>What to do</th></tr>
+<tr><td>"Not enough stock"</td><td>Check the stock on Products &amp; Stock. Buy more, or fix a wrong count with Adjust stock.</td></tr>
+<tr><td>"Cannot be deleted / used in sale…"</td><td>Cancel the sale or purchase named in the message first, then delete the product.</td></tr>
+<tr><td>"Enter the customer name for a credit sale"</td><td>Credit sales need a real customer name, not Walk-in.</td></tr>
+<tr><td>"Code already exists"</td><td>Each product needs a different code. Add a letter or number to make it unique.</td></tr>
+<tr><td>Sent to the login page unexpectedly</td><td>Your login expired. Sign in again.</td></tr>
+<tr><td>App looks old after an update</td><td>Close and reopen it twice.</td></tr>
+<tr><td>Red bar after being offline</td><td>Press Review, read the reason, and re-enter the entry.</td></tr>
+</table>
+<div class="tip">Best habits: record every sale straight away, do a stock count weekly and use Adjust stock, and check Customer debts every week.</div></section>
+</main></body></html>

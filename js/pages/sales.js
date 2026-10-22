@@ -10,9 +10,9 @@ export const meta = { eyebrow: 'REVENUE', title: 'Sales' };
 
 const cfg = () => window.APP_CONFIG || {};
 
-// "Name — CODE" and the quantity the way the shop counts it (e.g. 1 bundle + 2 packets).
+// "Name — CODE" and the quantity the way the shop counts it (e.g. 1 carton + 2 pieces).
 const itemName = (l, products) => { const p = products.find((x) => x.id === l.product_id); return p?.sku ? `${l.product_name} — ${p.sku}` : l.product_name; };
-const itemQty = (l, products) => { const p = products.find((x) => x.id === l.product_id); return p ? stockText(l.quantity_pieces, p.pieces_per_bundle) : `${num(l.quantity_pieces)} packets`; };
+const itemQty = (l, products) => { const p = products.find((x) => x.id === l.product_id); return p ? stockText(l.quantity_pieces, p.pieces_per_bundle) : `${num(l.quantity_pieces)} pieces`; };
 
 function receiptHtml(sale, lines, products = []) {
   const bal = Number(sale.total_amount) - Number(sale.amount_paid);

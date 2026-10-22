@@ -1,5 +1,5 @@
 // Product-lines editor shared by the Sale and Purchase forms.
-// Quantities are entered in bundles or packets and always sent to the database as packets.
+// Quantities are entered in cartons or pieces and always sent to the database as pieces.
 import { esc, num, money, stockText } from './utils.js';
 
 export const label = (p) => (p.sku ? `${p.name} — ${p.sku}` : p.name);
@@ -19,7 +19,7 @@ export function mountLineItems(form, products, kind, onTotal) {
     const p = byId[row.querySelector('.l-prod').value];
     const q = Number(row.querySelector('.l-qty').value || 0);
     if (!p) return 0;
-    return row.querySelector('.l-unit').value === 'bundle' ? q * Number(p.pieces_per_bundle) : q; // packets stay as entered
+    return row.querySelector('.l-unit').value === 'carton' ? q * Number(p.pieces_per_bundle) : q; // pieces stay as entered
   };
   const total = () => [...box.children].reduce((s, r) => s + Number(r.querySelector('.l-total').value || 0), 0);
 
@@ -35,8 +35,8 @@ export function mountLineItems(form, products, kind, onTotal) {
     else if (kind === 'sale') {
       const over = pcs > Number(p.stock_pieces);
       hint.className = 'l-hint' + (over ? ' bad' : '');
-      hint.textContent = `${num(pcs)} packets · price ${money(p.selling_price_per_piece)} / packet · in stock: ${stockText(p.stock_pieces, p.pieces_per_bundle)}${over ? ' — not enough stock!' : ''}`;
-    } else hint.textContent = `${num(pcs)} packets · current cost ${money(Number(p.cost_per_piece) * Number(p.pieces_per_bundle))} / bundle`;
+      hint.textContent = `${num(pcs)} pieces · price ${money(p.selling_price_per_piece)} / piece · in stock: ${stockText(p.stock_pieces, p.pieces_per_bundle)}${over ? ' — not enough stock!' : ''}`;
+    } else hint.textContent = `${num(pcs)} pieces · current cost ${money(Number(p.cost_per_piece) * Number(p.pieces_per_bundle))} / carton`;
     form.querySelector('[data-grand]').textContent = money(total());
     onTotal?.(total());
   }
@@ -45,7 +45,7 @@ export function mountLineItems(form, products, kind, onTotal) {
     const row = document.createElement('div');
     row.className = 'line';
     row.innerHTML = `<select class="l-prod" aria-label="Product">${options}</select>
-      <select class="l-unit" aria-label="Unit">${kind === 'sale' ? '<option value="packet">Packets</option><option value="bundle">Bundles</option>' : '<option value="bundle">Bundles</option><option value="packet">Packets</option>'}</select>
+      <select class="l-unit" aria-label="Unit">${kind === 'sale' ? '<option value="piece">Pieces</option><option value="carton">Cartons</option>' : '<option value="carton">Cartons</option><option value="piece">Pieces</option>'}</select>
       <input class="l-qty" type="number" min="0" step="any" placeholder="Qty" aria-label="Quantity">
       <input class="l-total" type="number" min="0" step="any" placeholder="0" aria-label="Amount">
       <button type="button" class="icon-btn l-del" aria-label="Remove line">×</button><small class="l-hint"></small>`;
@@ -69,7 +69,7 @@ export function mountLineItems(form, products, kind, onTotal) {
     total,
     // Returns [{product_id, quantity_pieces, line_total}] or throws a readable error.
     items() {
-      const merged = new Map();   // same product on several lines (bundles + loose packets) is added together
+      const merged = new Map();   // same product on several lines (cartons + loose pieces) is added together
       for (const row of box.children) {
         const id = row.querySelector('.l-prod').value, pcs = piecesOf(row), amt = Number(row.querySelector('.l-total').value || 0);
         if (!id && !pcs && !amt) continue;

@@ -1,7 +1,7 @@
 # Polythene Business Manager
 
 Stock, purchases, sales, debts, expenses and profit reports for a polythene-bag business.
-Counting: **producer sells bundles → each bundle has packets → you sell packets (or whole bundles)**. Pieces inside a packet are not tracked.
+Counting: **producer sells cartons → each carton has pieces → you sell pieces (or whole cartons)**. Pieces inside a piece are not tracked.
 Plain HTML + CSS + JavaScript (ES modules) with Supabase (Auth + Postgres). No build step.
 Currency: UGX. Your original tables are **unchanged**.
 
@@ -9,13 +9,12 @@ Currency: UGX. Your original tables are **unchanged**.
 | Page | What happens |
 |---|---|
 | **Dashboard** | Today's sales, 30-day net profit, customer debts, stock value, 14-day chart, low-stock alerts |
-| **Sales** | Multi-product sales (packets or bundles). Stock is checked and reduced automatically. Receipts can be printed. Owner can cancel a sale (stock returns). |
-| **Products & Stock** | Add/edit products, stock shown as bundles + packets, stock adjustments with a reason, full stock history per product |
+| **Sales** | Multi-product sales (pieces or cartons). Stock is checked and reduced automatically. Receipts can be printed. Owner can cancel a sale (stock returns). |
+| **Products & Stock** | Add/edit products, stock shown as cartons + pieces, stock adjustments with a reason, full stock history per product |
 | **Purchases** | Multi-product purchases that add stock and update the average cost. Supplier balances. |
 | **Payments & Debts** | Who owes you, who you owe, receive/pay part-payments, full payment history |
 | **Expenses** | Date and category filters, CSV export |
 | **Reports** | Real profit = sales − cost of goods sold − expenses. This week / last week / custom range, print or save as PDF (use "Last week" for your partner's weekly report) |
-| **Users** | Owner changes names, roles and access |
 
 Roles: **Owner** (everything) · **Partner** (stock, purchases, reports) · **Staff** (sales, expenses, customer payments).
 
@@ -47,8 +46,8 @@ sql/03_delete_product.sql   lets you delete products (run once)
 ```
 
 ## How the numbers work
-- Stock is counted in **packets**. A product's "Packets in one bundle" lets you enter and see stock as bundles + packets. (The database columns are still named `pieces_*` because your tables were not changed; read them as packets.)
-- You enter the **buying price per bundle**; the app works out the cost per packet. Selling price is set **per packet**; selling a bundle is packets × price (you can edit the amount on the line).
+- Stock is counted in **pieces**. A product's "Pieces in one carton" lets you enter and see stock as cartons + pieces. (The database columns are still named `pieces_*` because your tables were not changed; read them as pieces.)
+- You enter the **buying price per carton**; the app works out the cost per piece. Selling price is set **per piece**; selling a carton is pieces × price (you can edit the amount on the line).
 - A sale stores each product's cost at that moment (in `stock_movements`), so profit stays correct if prices change later.
 - Purchase cost uses a **weighted average** so cost per piece updates automatically.
 - Line prices of each sale/purchase are kept in `stock_movements.notes` and read back through the views `v_sale_lines` and `v_purchase_lines` (no new tables were needed).

@@ -50,7 +50,7 @@ export async function render(el) {
     openModal({
       eyebrow: 'PURCHASE', title: `${p.purchase_no} — ${p.supplier_name}`, wide: true,
       body: `<p class="muted">${fmtDate(p.purchase_date)}${p.notes ? ` · ${esc(p.notes)}` : ''}</p>
-        <div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Packets</th><th class="right">Cost / packet</th><th class="right">Amount</th></tr></thead><tbody>
+        <div class="table-wrap"><table><thead><tr><th>Product</th><th class="right">Pieces</th><th class="right">Cost / piece</th><th class="right">Amount</th></tr></thead><tbody>
         ${lines.map((l) => `<tr><td>${esc(l.product_name)}</td><td class="right">${num(l.quantity_pieces)}</td><td class="right">${money(l.unit_cost)}</td><td class="right">${money(l.line_total)}</td></tr>`).join('')
           || '<tr><td colspan="4"><div class="empty">No item details recorded.</div></td></tr>'}</tbody></table></div>
         <div class="totals"><span>Total</span><b>${money(p.total_amount)}</b><span>Paid</span><b>${money(p.amount_paid)}</b><span>Balance</span><b class="${balanceOf(p) > 0 ? 'neg' : ''}">${money(balanceOf(p))}</b></div>`,

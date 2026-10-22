@@ -24,15 +24,15 @@ export const fmtDateTime = (ts) =>
 export const startOfWeek = (iso) => { const d = new Date(iso + 'T00:00:00'); const diff = (d.getDay() + 6) % 7; d.setDate(d.getDate() - diff); return toISO(d); };
 export const startOfMonth = (iso) => iso.slice(0, 8) + '01';
 
-// Stock is counted in packets (the database column is still called "pieces").
-// Show it the way the business counts: bundles and packets.
-export const stockText = (packets, perBundle) => {
-  const p = Number(packets || 0), b = Number(perBundle || 1);
-  if (b <= 1) return `${num(p)} packet${p === 1 ? '' : 's'}`;
-  const bundles = Math.floor(p / b), rest = +(p - bundles * b).toFixed(2);
+// Stock is counted in pieces (the database column is still called "pieces").
+// Show it the way the business counts: cartons and pieces.
+export const stockText = (pieces, perBundle) => {
+  const p = Number(pieces || 0), b = Number(perBundle || 1);
+  if (b <= 1) return `${num(p)} piece${p === 1 ? '' : 's'}`;
+  const cartons = Math.floor(p / b), rest = +(p - cartons * b).toFixed(2);
   const parts = [];
-  if (bundles) parts.push(`${num(bundles)} bundle${bundles === 1 ? '' : 's'}`);
-  if (rest) parts.push(`${num(rest)} packet${rest === 1 ? '' : 's'}`);
+  if (cartons) parts.push(`${num(cartons)} carton${cartons === 1 ? '' : 's'}`);
+  if (rest) parts.push(`${num(rest)} piece${rest === 1 ? '' : 's'}`);
   return parts.join(' + ') || '0';
 };
 

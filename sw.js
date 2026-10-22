@@ -1,5 +1,5 @@
 // INV SYSTEM service worker: keeps the app files available offline. Database calls (Supabase) are never cached here.
-const CACHE = 'inv-system-v4';
+const CACHE = 'inv-system-v5';
 const SHELL = ['./', 'index.html', 'css/styles.css', 'config.js', 'pwa.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
   'js/main.js', 'js/api.js', 'js/offline.js', 'js/store.js', 'js/ui.js', 'js/icons.js', 'js/payment-modal.js', 'js/supabase.js', 'js/utils.js', 'js/lineitems.js',
   'js/pages/dashboard.js', 'js/pages/sales.js', 'js/pages/products.js', 'js/pages/purchases.js', 'js/pages/payments.js', 'js/pages/expenses.js', 'js/pages/reports.js'];
